@@ -2,7 +2,7 @@ import { Server } from 'socket.io';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { SocketEvent } from '../../models/SocketEvent';
-import dataService from '../../services/countService';
+import countService from '../../services/countService';
 
 const handler = (
   req: NextApiRequest,
@@ -15,7 +15,7 @@ const handler = (
 
     io.on('connection', (socket) => {
       socket.on(SocketEvent.UpdateCount, (msg) => {
-        dataService.setCount(msg);
+        countService.setCount(msg);
         socket.broadcast.emit(SocketEvent.ReceiveUpdateCount, msg);
       });
     });

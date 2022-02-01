@@ -8,10 +8,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@nextui-org/react": "^1.0.2-beta.3",
     "lowdb": "^3.0.0",
     "next": "12.0.9",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-medium-image-zoom": "^4.3.5",
+    "sass": "^1.49.6",
     "socket.io": "^4.4.1",
     "socket.io-client": "^4.4.1"
   },

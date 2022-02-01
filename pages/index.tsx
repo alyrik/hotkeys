@@ -2,24 +2,40 @@ import { useEffect, useRef, useState } from 'react';
 import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import io from 'socket.io-client';
+import { Button, Card, Text } from '@nextui-org/react';
+import Zoom from 'react-medium-image-zoom';
 
 import styles from '../styles/Home.module.css';
 import { SocketEvent } from '../models/SocketEvent';
-import dataService from '../services/countService';
+import countService from '../services/countService';
+import Slide from '../components/Slide/Slide';
 
 const IMAGE_HOST = 'https://hotkeys-gifs.s3.eu-central-1.amazonaws.com/';
+const SHIFT_NOTE = '+ Shift to enable Selection';
 
-const screenMapping: Record<number, string> = {
-  1: 'Move+Caret+to+Previous%3ANext+Word.gif',
-  2: 'Move+Caret+to+Line+Start%3AEnd.gif',
-  3: 'Select+Single+Line+at+Caret.gif',
-  4: 'Extend%3AShrink+Selection.gif',
-  5: 'Add%3ARemove+Selection+for+Next+Occurrence.gif',
-  6: 'Delete+Line.gif',
-  7: 'Duplicate+Line+or+Selection.gif',
-  8: 'Undo%3ARedo.gif',
-  9: 'Start+New+Line.gif',
-  10: 'Indent%3AUnindent+Line+or+Selection.gif',
+const screenMapping: Record<
+  number,
+  { imageSrc: string; title: string; subTitle?: string }
+> = {
+  1: {
+    imageSrc: 'Move+Caret+to+Previous%3ANext+Word.gif',
+    title: 'Move Caret to Previous/Next Word (+ Shift — with Selection)',
+    subTitle: SHIFT_NOTE,
+  },
+
+  2: {
+    imageSrc: 'Move+Caret+to+Line+Start%3AEnd.gif',
+    title: 'Move Caret to Line Start/End',
+    subTitle: SHIFT_NOTE,
+  },
+  // 3: 'Select+Single+Line+at+Caret.gif',
+  // 4: 'Extend%3AShrink+Selection.gif',
+  // 5: 'Add%3ARemove+Selection+for+Next+Occurrence.gif',
+  // 6: 'Delete+Line.gif',
+  // 7: 'Duplicate+Line+or+Selection.gif',
+  // 8: 'Undo%3ARedo.gif',
+  // 9: 'Start+New+Line.gif',
+  // 10: 'Indent%3AUnindent+Line+or+Selection.gif',
 };
 
 interface IHomePageProps {
@@ -63,6 +79,8 @@ const Home: NextPage<IHomePageProps> = ({ initialCount }) => {
     socketClient.current?.emit(SocketEvent.UpdateCount, nextCount);
   }
 
+  const screenData = screenMapping[screenNumber];
+
   return (
     <div className={styles.container}>
       <Head>
@@ -73,32 +91,21 @@ const Home: NextPage<IHomePageProps> = ({ initialCount }) => {
 
       <main className={styles.main}>
         <div>
-          <div
-            style={{
-              width: '100%',
-              height: 0,
-              paddingBottom: '51%',
-              position: 'relative',
-            }}>
-            <img
-              src={`${IMAGE_HOST}${screenMapping[screenNumber]}`}
-              width="100%"
-              height="100%"
-              style={{ position: 'absolute' }}
-            />
-          </div>
+          <Button onClick={handleNextButtonClick}>Go to the next slide</Button>
         </div>
-        <br/>
-
+        <br />
         <div>
-          <button onClick={handleNextButtonClick}>Go to the next slide</button>
-        </div>
-        <br/>
-        <div>
-          <button onClick={handleResetButtonClick}>
+          <Button onClick={handleResetButtonClick}>
             Go to the first slide
-          </button>
+          </Button>
         </div>
+        <br />
+        <Slide
+          id={screenNumber}
+          title={screenData.title}
+          subTitle={screenData.subTitle}
+          imageSrc={`${IMAGE_HOST}${screenData.imageSrc}`}
+        />
       </main>
     </div>
   );
@@ -109,7 +116,7 @@ export const getServerSideProps: GetServerSideProps<
 > = async () => {
   return {
     props: {
-      initialCount: dataService.getCount(),
+      initialCount: countService.getCount(),
     },
   };
 };
