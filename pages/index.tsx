@@ -163,6 +163,7 @@ const Home: NextPage<IHomePageProps> = ({ initialCount, isAdmin, userId }) => {
         )}
         <Spacer y={2} />
         <Slide
+          key={screenNumber}
           id={screenNumber}
           title={screenData.title}
           subTitle={screenData.subTitle}
