@@ -3,12 +3,15 @@ import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import io from 'socket.io-client';
 import { Button, Spacer } from '@nextui-org/react';
+import { v4 as uuidv4 } from 'uuid';
 
 import styles from '../styles/Home.module.css';
 import { SocketEvent } from '../models/SocketEvent';
-import countService from '../services/countService';
+import localDataService from '../services/localDataService';
 import Slide from '../components/Slide/Slide';
 import { FormValue } from '../models/FormValue';
+import { CookieKey } from '../models/CookieKey';
+import { buildUserIdCookie } from '../helpers/buildCookie';
 
 const IMAGE_HOST = 'https://hotkeys-gifs.s3.eu-central-1.amazonaws.com/';
 const SHIFT_NOTE = '+ Shift to enable Selection';
@@ -64,13 +67,18 @@ const screenMapping: Record<
 interface IHomePageProps {
   initialCount: number;
   isAdmin: boolean;
+  userId: string;
 }
 
-const Home: NextPage<IHomePageProps> = ({ initialCount, isAdmin }) => {
+const Home: NextPage<IHomePageProps> = ({ initialCount, isAdmin, userId }) => {
   const [screenNumber, setScreenNumber] = useState(initialCount);
   const [formValue, setFormValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  let socketClient = useRef<ReturnType<typeof io>>();
+  const socketClient = useRef<ReturnType<typeof io>>();
+  const formValueRef = useRef(formValue);
+  const screenNumberRef = useRef(screenNumber);
+  formValueRef.current = formValue;
+  screenNumberRef.current = screenNumber;
 
   useEffect(() => {
     fetch('/api/ws').finally(() => {
@@ -84,13 +92,20 @@ const Home: NextPage<IHomePageProps> = ({ initialCount, isAdmin }) => {
         SocketEvent.ReceiveUpdateCount,
         (count: number) => {
           setIsProcessing(true);
-          // TODO: Save value to server
+
+          if (formValueRef.current) {
+            socketClient.current?.emit(SocketEvent.SaveAnswer, {
+              questionId: screenNumberRef.current,
+              userId,
+              answer: formValueRef.current,
+            });
+          }
 
           setTimeout(() => {
             setFormValue('');
             setScreenNumber(Number(count));
             setIsProcessing(false);
-          }, 250);
+          }, 500);
         },
       );
 
@@ -163,14 +178,21 @@ const Home: NextPage<IHomePageProps> = ({ initialCount, isAdmin }) => {
 
 export const getServerSideProps: GetServerSideProps<IHomePageProps> = async ({
   req,
+  res,
 }) => {
-  const isAdmin = req.cookies.ADMIN_TOKEN === process.env.ADMIN_TOKEN;
-  console.log('IS ADMIN', isAdmin);
+  const userId = req.cookies[CookieKey.UserId] ?? uuidv4();
+  const isAdmin = userId === process.env.ADMIN_TOKEN;
+
+  res.setHeader(
+    'Set-Cookie',
+    buildUserIdCookie(userId, process.env.NODE_ENV === 'production'),
+  );
 
   return {
     props: {
-      initialCount: countService.getCount(),
+      initialCount: localDataService.getCount(),
       isAdmin,
+      userId,
     },
   };
 };

@@ -11,7 +11,7 @@ const file = join(__dirname, '.data.json');
 const adapter = new JSONFileSync<IData>(file);
 const db = new LowSync<IData>(adapter);
 
-class CountService {
+class LocalDataService {
   getCount() {
     db.read();
 
@@ -30,4 +30,4 @@ class CountService {
   }
 }
 
-export default new CountService();
+export default new LocalDataService();
