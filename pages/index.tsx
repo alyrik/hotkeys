@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import io from 'socket.io-client';
-import { Button } from '@nextui-org/react';
+import { Button, Spacer } from '@nextui-org/react';
 
 import styles from '../styles/Home.module.css';
 import { SocketEvent } from '../models/SocketEvent';
@@ -63,11 +63,13 @@ const screenMapping: Record<
 
 interface IHomePageProps {
   initialCount: number;
+  isAdmin: boolean;
 }
 
-const Home: NextPage<IHomePageProps> = ({ initialCount }) => {
+const Home: NextPage<IHomePageProps> = ({ initialCount, isAdmin }) => {
   const [screenNumber, setScreenNumber] = useState(initialCount);
   const [formValue, setFormValue] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
   let socketClient = useRef<ReturnType<typeof io>>();
 
   useEffect(() => {
@@ -81,9 +83,14 @@ const Home: NextPage<IHomePageProps> = ({ initialCount }) => {
       socketClient.current?.on(
         SocketEvent.ReceiveUpdateCount,
         (count: number) => {
+          setIsProcessing(true);
           // TODO: Save value to server
-          setFormValue('');
-          setScreenNumber(Number(count));
+
+          setTimeout(() => {
+            setFormValue('');
+            setScreenNumber(Number(count));
+            setIsProcessing(false);
+          }, 250);
         },
       );
 
@@ -94,12 +101,20 @@ const Home: NextPage<IHomePageProps> = ({ initialCount }) => {
   }, []);
 
   function handleNextButtonClick() {
+    const confirm = window.confirm('Are you sure to go to the next slide?');
+
+    if (!confirm) return;
+
     const nextCount = Number(screenNumber) + 1;
     setScreenNumber(nextCount);
     socketClient.current?.emit(SocketEvent.UpdateCount, nextCount);
   }
 
   function handleResetButtonClick() {
+    const confirm = window.confirm('Are you sure to start from the beginning?');
+
+    if (!confirm) return;
+
     const nextCount = 1;
     setScreenNumber(nextCount);
     socketClient.current?.emit(SocketEvent.UpdateCount, nextCount);
@@ -125,16 +140,13 @@ const Home: NextPage<IHomePageProps> = ({ initialCount }) => {
       </Head>
 
       <main className={styles.main}>
-        <div>
-          <Button onClick={handleNextButtonClick}>Go to the next slide</Button>
-        </div>
-        <br />
-        <div>
-          <Button onClick={handleResetButtonClick}>
-            Go to the first slide
-          </Button>
-        </div>
-        <br />
+        {isAdmin && (
+          <Button.Group color="secondary">
+            <Button onClick={handleResetButtonClick}>⇦⇦⇦</Button>
+            <Button onClick={handleNextButtonClick}>⇨</Button>
+          </Button.Group>
+        )}
+        <Spacer y={2} />
         <Slide
           id={screenNumber}
           title={screenData.title}
@@ -142,18 +154,23 @@ const Home: NextPage<IHomePageProps> = ({ initialCount }) => {
           imageSrc={`${IMAGE_HOST}${screenData.imageSrc}`}
           formValue={formValue}
           onFormChange={(value: FormValue) => setFormValue(value)}
+          isDisabled={isProcessing}
         />
       </main>
     </div>
   );
 };
 
-export const getServerSideProps: GetServerSideProps<
-  IHomePageProps
-> = async () => {
+export const getServerSideProps: GetServerSideProps<IHomePageProps> = async ({
+  req,
+}) => {
+  const isAdmin = req.cookies.ADMIN_TOKEN === process.env.ADMIN_TOKEN;
+  console.log('IS ADMIN', isAdmin);
+
   return {
     props: {
       initialCount: countService.getCount(),
+      isAdmin,
     },
   };
 };

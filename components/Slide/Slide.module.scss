@@ -1,4 +1,8 @@
 .root {
-  margin: 0 auto;
-  max-width: 800px;
+  transition: filter 200ms ease;
+}
+
+.disabled {
+  filter: blur(20px);
+  pointer-events: none;
 }

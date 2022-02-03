@@ -1,9 +1,11 @@
 import React, { FC } from 'react';
-import { Card, Text, Col, Radio, Spacer, Button } from '@nextui-org/react';
+import Image from 'next/image';
+import { Card, Text, Col, Radio, Spacer } from '@nextui-org/react';
 import Zoom from 'react-medium-image-zoom';
 
 import styles from './Slide.module.scss';
 import { FormValue } from '../../models/FormValue';
+import { imagePlaceholder } from './imagePlaceholder';
 
 interface ISlideProps {
   id: number;
@@ -12,6 +14,7 @@ interface ISlideProps {
   subTitle?: string;
   formValue: FormValue | string;
   onFormChange(value: FormValue): void;
+  isDisabled: boolean;
 }
 
 const Slide: FC<ISlideProps> = ({
@@ -21,11 +24,19 @@ const Slide: FC<ISlideProps> = ({
   imageSrc,
   formValue,
   onFormChange,
+  isDisabled,
 }) => {
   return (
-    <div className={styles.root}>
+    <div
+      className={[styles.root, isDisabled ? styles.disabled : undefined].join(
+        ' ',
+      )}>
       <Card>
-        <Card.Header css={{ background: formValue ? '$success' : '' }}>
+        <Card.Header
+          css={{
+            transition: 'background 250ms ease',
+            background: formValue ? '$success' : '',
+          }}>
           <Col>
             <Text
               h1={true}
@@ -45,7 +56,14 @@ const Slide: FC<ISlideProps> = ({
             overlayBgColorStart="rgba(0, 0, 0, 0)"
             overlayBgColorEnd="rgba(0, 0, 0, 0.75)"
             zoomMargin={50}>
-            <img src={imageSrc} alt={''} width="100%" />
+            <Image
+              src={imageSrc}
+              alt={title}
+              width="1280"
+              height="648"
+              placeholder="blur"
+              blurDataURL={imagePlaceholder}
+            />
           </Zoom>
         </Card.Body>
         <Card.Footer>
