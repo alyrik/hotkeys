@@ -94,7 +94,7 @@ const Home: NextPage<IHomePageProps> = ({ initialCount, isAdmin, userId }) => {
           setIsProcessing(true);
 
           if (formValueRef.current) {
-            socketClient.current?.emit(SocketEvent.SaveAnswer, {
+            socketClient.current?.emit(SocketEvent.SaveResponse, {
               questionId: screenNumberRef.current,
               userId,
               answer: formValueRef.current,

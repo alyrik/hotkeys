@@ -5,9 +5,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy:lambda:sqs": "scripts/deploy.sh hotkeysSqsProcessorDev",
+    "deploy:lambda:sqs:prod": "scripts/deploy.sh hotkeysSqsProcessor"
   },
   "dependencies": {
+    "@aws-sdk/client-sqs": "^3.49.0",
     "@nextui-org/react": "^1.0.2-beta.3",
     "cookie": "^0.4.2",
     "lowdb": "^3.0.0",
