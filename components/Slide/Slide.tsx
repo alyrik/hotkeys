@@ -1,11 +1,9 @@
 import React, { FC } from 'react';
-import Image from 'next/image';
 import { Card, Text, Col, Radio, Spacer } from '@nextui-org/react';
 import Zoom from 'react-medium-image-zoom';
 
 import styles from './Slide.module.scss';
 import { FormValue } from '../../models/FormValue';
-import { imagePlaceholder } from './imagePlaceholder';
 
 interface ISlideProps {
   id: number;
@@ -14,6 +12,7 @@ interface ISlideProps {
   subTitle?: string;
   formValue: FormValue | string;
   onFormChange(value: FormValue): void;
+  isLoading: boolean;
   isDisabled: boolean;
 }
 
@@ -24,11 +23,12 @@ const Slide: FC<ISlideProps> = ({
   imageSrc,
   formValue,
   onFormChange,
+  isLoading,
   isDisabled,
 }) => {
   return (
     <div
-      className={[styles.root, isDisabled ? styles.disabled : undefined].join(
+      className={[styles.root, isLoading ? styles.loading : undefined].join(
         ' ',
       )}>
       <Card>
@@ -56,14 +56,14 @@ const Slide: FC<ISlideProps> = ({
             overlayBgColorStart="rgba(0, 0, 0, 0)"
             overlayBgColorEnd="rgba(0, 0, 0, 0.75)"
             zoomMargin={50}>
-            <Image
-              src={imageSrc}
-              alt={title}
-              width="1280"
-              height="648"
-              placeholder="blur"
-              blurDataURL={imagePlaceholder}
-            />
+            <div style={{ paddingBottom: '50.63%' }}>
+              <img
+                src={imageSrc}
+                alt={title}
+                width="100%"
+                style={{ position: 'absolute' }}
+              />
+            </div>
           </Zoom>
         </Card.Body>
         <Card.Footer>
@@ -73,6 +73,7 @@ const Slide: FC<ISlideProps> = ({
               How often do you use this functionality (via keyboard)?
             </Text>
             <Radio.Group
+              disabled={isDisabled}
               value={formValue}
               onChange={(value) => onFormChange(value as FormValue)}>
               <Radio value={FormValue.Always}>

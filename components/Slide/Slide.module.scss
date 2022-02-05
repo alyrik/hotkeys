@@ -2,7 +2,7 @@
   transition: filter 200ms ease;
 }
 
-.disabled {
+.loading {
   filter: blur(20px);
   pointer-events: none;
 }
