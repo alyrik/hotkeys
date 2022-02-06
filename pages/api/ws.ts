@@ -1,14 +1,13 @@
 import { Server } from 'socket.io';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { parse } from 'cookie';
-import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 
 import { SocketEvent } from '../../models/SocketEvent';
 import localDataService from '../../services/localDataService';
 import { SocketEventData } from '../../models/SocketEventData';
 import { CookieKey } from '../../models/CookieKey';
-
-const client = new SQSClient({ region: process.env.AWS_REGION });
+import sqsService from '../../services/sqsService';
+import dynamoDbService from '../../services/dynamoDbService';
 
 const handler = (
   req: NextApiRequest,
@@ -34,14 +33,52 @@ const handler = (
         SocketEvent.SaveResponse,
         async (msg: SocketEventData[SocketEvent.SaveResponse]) => {
           if (msg) {
-            const command = new SendMessageCommand({
-              QueueUrl: process.env.AWS_SQS_RESPONSE_URL,
-              MessageBody: JSON.stringify(msg),
-            });
-            await client.send(command);
+            await sqsService.sendMessage<typeof msg>(msg);
           }
         },
       );
+
+      socket.on(SocketEvent.PrepareResults, async () => {
+        if (!isAdmin) {
+          return;
+        }
+
+        const interval = setInterval(async () => {
+          const attributes = await sqsService.getQueueAttributes([
+            'ApproximateNumberOfMessages',
+            'ApproximateNumberOfMessagesDelayed',
+            'ApproximateNumberOfMessagesNotVisible',
+          ]);
+
+          console.log(
+            'attributes.ApproximateNumberOfMessages',
+            attributes.ApproximateNumberOfMessages,
+          );
+          console.log(
+            'attributes.ApproximateNumberOfMessagesDelayed',
+            attributes.ApproximateNumberOfMessagesDelayed,
+          );
+          console.log(
+            'attributes.ApproximateNumberOfMessagesNotVisible',
+            attributes.ApproximateNumberOfMessagesNotVisible,
+          );
+
+          if (
+            attributes.ApproximateNumberOfMessages === '0' &&
+            attributes.ApproximateNumberOfMessagesDelayed === '0' &&
+            attributes.ApproximateNumberOfMessagesNotVisible === '0'
+          ) {
+            // TODO fetch from Dynamo and prepare analysis — save into local storage
+            const data = await dynamoDbService.scan();
+            console.log('HAVING DATA', data.length);
+            clearInterval(interval);
+            setTimeout(async () => {
+              const data = await dynamoDbService.scan();
+              console.log('HAVING DATA 2', data.length);
+            }, 1000);
+          }
+        }, 1000);
+      });
     });
 
     res.socket.server.io = io;

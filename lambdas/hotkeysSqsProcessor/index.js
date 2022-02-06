@@ -3,15 +3,31 @@ const sdkUtils = require('@aws-sdk/util-dynamodb');
 const uuid = require('uuid').v4;
 
 const client = new SDK.DynamoDBClient({ region: 'eu-central-1' });
+const chunkSize = 25;
 
-async function handleEvent(body) {
+async function batchWrite(group) {
+  const command = new SDK.BatchWriteItemCommand({
+    RequestItems: {
+      [process.env.AWS_TABLE]: group.map((groupItem) => ({
+        PutRequest: {
+          Item: groupItem,
+        },
+      })),
+    },
+  });
+
+  const response = await client.send(command);
+  console.log('RESPONSE', response);
+}
+
+function prepareItem(item) {
   let parsedBody;
 
   try {
-    parsedBody = JSON.parse(body);
+    parsedBody = JSON.parse(item.body);
   } catch (e) {
     console.log('Empty body, skipping');
-    return;
+    return null;
   }
 
   if (
@@ -21,25 +37,46 @@ async function handleEvent(body) {
     !parsedBody.answer
   ) {
     console.log('Empty body, skipping');
-    return;
+    return null;
   }
 
-  const command = new SDK.PutItemCommand({
-    Item: sdkUtils.marshall({
-      id: uuid(),
-      createdAt: Date.now(),
-      questionId: parsedBody.questionId,
-      userId: parsedBody.userId,
-      answer: parsedBody.answer,
-    }),
-    TableName: process.env.AWS_TABLE,
+  return sdkUtils.marshall({
+    id: uuid(),
+    createdAt: Date.now(),
+    questionId: parsedBody.questionId,
+    userId: parsedBody.userId,
+    answer: parsedBody.answer,
   });
+}
 
-  return client.send(command);
+function prepareGroups(records) {
+  if (!records.length) {
+    return [];
+  }
+
+  return records.reduce((result, item, index) => {
+    const chunkIndex = Math.floor(index / chunkSize);
+
+    if (!result[chunkIndex]) {
+      result[chunkIndex] = [];
+    }
+
+    const preparedItem = prepareItem(item);
+
+    if (!preparedItem) {
+      return result;
+    }
+
+    result[chunkIndex].push(preparedItem);
+
+    return result;
+  }, []);
 }
 
 exports.handler = async (event) => {
-  const promises = event.Records.map((record) => handleEvent(record.body));
+  // TODO: handle failed items
+  const groups = prepareGroups(event.Records);
+  const promises = groups.map((group) => batchWrite(group));
 
   await Promise.all(promises);
 

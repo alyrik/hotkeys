@@ -12,66 +12,19 @@ import Slide from '../components/Slide/Slide';
 import { FormValue } from '../models/FormValue';
 import { CookieKey } from '../models/CookieKey';
 import { buildUserIdCookie } from '../helpers/buildCookie';
-
-const IMAGE_HOST = 'https://d1l6237ra2ufh4.cloudfront.net/';
-const SHIFT_NOTE = '+ Shift to enable Selection';
-
-const screenMapping: Record<
-  number,
-  { imageSrc: string; title: string; subTitle?: string }
-> = {
-  1: {
-    imageSrc: 'Move+Caret+to+Previous%3ANext+Word.gif',
-    title: 'Move Caret to Previous/Next Word',
-    subTitle: SHIFT_NOTE,
-  },
-  2: {
-    imageSrc: 'Move+Caret+to+Line+Start%3AEnd.gif',
-    title: 'Move Caret to Line Start/End',
-    subTitle: SHIFT_NOTE,
-  },
-  3: {
-    imageSrc: 'Select+Single+Line+at+Caret.gif',
-    title: 'Select Single Line at Caret',
-  },
-  4: {
-    imageSrc: 'Extend%3AShrink+Selection.gif',
-    title: 'Extend/Shrink Selection',
-  },
-  5: {
-    imageSrc: 'Add%3ARemove+Selection+for+Next+Occurrence.gif',
-    title: 'Add/Remove Selection for Next Occurrence',
-  },
-  6: {
-    imageSrc: 'Delete+Line.gif',
-    title: 'Delete Line',
-  },
-  7: {
-    imageSrc: 'Duplicate+Line+or+Selection.gif',
-    title: 'Duplicate Line or Selection',
-  },
-  8: {
-    imageSrc: 'Undo%3ARedo.gif',
-    title: 'Undo/Redo',
-  },
-  9: {
-    imageSrc: 'Start+New+Line.gif',
-    title: 'Start New Line',
-  },
-  10: {
-    imageSrc: 'Indent%3AUnindent+Line+or+Selection.gif',
-    title: 'Indent/Unindent Line or Selection',
-  },
-};
+import { IMAGE_HOST, screenMapping } from '../config/config';
+import sqsService from '../services/sqsService';
+import dynamoDbService from '../services/dynamoDbService';
+import analyticsService, { IInputData } from '../services/analyticsService';
 
 interface IHomePageProps {
-  initialCount: number;
+  initialScreen: number;
   isAdmin: boolean;
   userId: string;
 }
 
-const Home: NextPage<IHomePageProps> = ({ initialCount, isAdmin, userId }) => {
-  const [screenNumber, setScreenNumber] = useState(initialCount);
+const Home: NextPage<IHomePageProps> = ({ initialScreen, isAdmin, userId }) => {
+  const [screenNumber, setScreenNumber] = useState(initialScreen);
   const [formValue, setFormValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const socketClient = useRef<ReturnType<typeof io>>();
@@ -125,6 +78,12 @@ const Home: NextPage<IHomePageProps> = ({ initialCount, isAdmin, userId }) => {
     const nextCount = Number(screenNumber) + 1;
     setScreenNumber(nextCount);
     socketClient.current?.emit(SocketEvent.UpdateCount, nextCount);
+
+    if (nextCount > Object.keys(screenMapping).length) {
+      setTimeout(() => {
+        socketClient.current?.emit(SocketEvent.PrepareResults);
+      }, 2000);
+    }
   }
 
   function handleResetButtonClick() {
@@ -198,17 +157,32 @@ export const getServerSideProps: GetServerSideProps<IHomePageProps> = async ({
 }) => {
   const userId = req.cookies[CookieKey.UserId] ?? uuidv4();
   const isAdmin = userId === process.env.ADMIN_TOKEN;
+  const initialScreen = localDataService.getCount();
 
   res.setHeader(
     'Set-Cookie',
     buildUserIdCookie(userId, process.env.NODE_ENV === 'production'),
   );
 
-  // TODO: fetch results if localDataService.getCount() > totalCount
+  if (initialScreen > Object.keys(screenMapping).length) {
+    const attributes = await sqsService.getQueueAttributes([
+      'ApproximateNumberOfMessages',
+    ]);
+    console.log('attributes', attributes);
+
+    if (attributes.ApproximateNumberOfMessages === '0') {
+      const data = await dynamoDbService.scan<IInputData>();
+      const analyticsData = analyticsService.prepare(data);
+      console.log('DATA', data.length);
+      console.log('analyticsData', analyticsData);
+      // TODO: prepare analysis
+      // TODO: save analytics into local storage
+    }
+  }
 
   return {
     props: {
-      initialCount: localDataService.getCount(),
+      initialScreen,
       isAdmin,
       userId,
     },
