@@ -16,8 +16,7 @@ async function batchWrite(group) {
     },
   });
 
-  const response = await client.send(command);
-  console.log('RESPONSE', response);
+  return client.send(command);
 }
 
 function prepareItem(item) {

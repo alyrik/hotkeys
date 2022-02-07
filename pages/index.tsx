@@ -13,20 +13,26 @@ import { FormValue } from '../models/FormValue';
 import { CookieKey } from '../models/CookieKey';
 import { buildUserIdCookie } from '../helpers/buildCookie';
 import { IMAGE_HOST, screenMapping } from '../config/config';
-import sqsService from '../services/sqsService';
-import dynamoDbService from '../services/dynamoDbService';
-import analyticsService, { IInputData } from '../services/analyticsService';
+import { AnalyticsData } from '../models/AnalyticsData';
+import { SocketEventData } from '../models/SocketEventData';
 
 interface IHomePageProps {
   initialScreen: number;
   isAdmin: boolean;
   userId: string;
+  analyticsData: AnalyticsData | null;
 }
 
-const Home: NextPage<IHomePageProps> = ({ initialScreen, isAdmin, userId }) => {
+const Home: NextPage<IHomePageProps> = ({
+  initialScreen,
+  isAdmin,
+  userId,
+  analyticsData,
+}) => {
   const [screenNumber, setScreenNumber] = useState(initialScreen);
   const [formValue, setFormValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [localAnalyticsData, setLocalAnalyticsData] = useState(analyticsData);
   const socketClient = useRef<ReturnType<typeof io>>();
   const formValueRef = useRef(formValue);
   const screenNumberRef = useRef(screenNumber);
@@ -59,6 +65,13 @@ const Home: NextPage<IHomePageProps> = ({ initialScreen, isAdmin, userId }) => {
             setScreenNumber(Number(count));
             setIsProcessing(false);
           }, 500);
+        },
+      );
+
+      socketClient.current?.on(
+        SocketEvent.ReceiveAnalyticsData,
+        (msg: SocketEventData[SocketEvent.ReceiveAnalyticsData]) => {
+          setLocalAnalyticsData(msg);
         },
       );
 
@@ -100,6 +113,32 @@ const Home: NextPage<IHomePageProps> = ({ initialScreen, isAdmin, userId }) => {
   const screenEntries = Object.entries(screenMapping);
   const totalScreenCount = screenEntries.length;
 
+  // TODO: custom prepare analytics button
+
+  function renderResult() {
+    if (screenNumber <= totalScreenCount) {
+      return (
+        <Slide
+          key={screenNumber}
+          id={screenNumber}
+          title={screenData.title}
+          subTitle={screenData.subTitle}
+          imageSrc={`${IMAGE_HOST}${screenData.imageSrc}`}
+          formValue={formValue}
+          onFormChange={(value: FormValue) => setFormValue(value)}
+          isLoading={isProcessing}
+          isDisabled={isAdmin}
+        />
+      );
+    }
+
+    if (localAnalyticsData) {
+      return <div>Analytics data</div>;
+    }
+
+    return <div>Waiting for results</div>;
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -131,21 +170,7 @@ const Home: NextPage<IHomePageProps> = ({ initialScreen, isAdmin, userId }) => {
           </Button.Group>
         )}
         <Spacer y={2} />
-        {screenNumber <= totalScreenCount ? (
-          <Slide
-            key={screenNumber}
-            id={screenNumber}
-            title={screenData.title}
-            subTitle={screenData.subTitle}
-            imageSrc={`${IMAGE_HOST}${screenData.imageSrc}`}
-            formValue={formValue}
-            onFormChange={(value: FormValue) => setFormValue(value)}
-            isLoading={isProcessing}
-            isDisabled={isAdmin}
-          />
-        ) : (
-          'RESULTS'
-        )}
+        {renderResult()}
       </main>
     </div>
   );
@@ -159,25 +184,15 @@ export const getServerSideProps: GetServerSideProps<IHomePageProps> = async ({
   const isAdmin = userId === process.env.ADMIN_TOKEN;
   const initialScreen = localDataService.getCount();
 
+  let analyticsData: AnalyticsData | null = null;
+
   res.setHeader(
     'Set-Cookie',
     buildUserIdCookie(userId, process.env.NODE_ENV === 'production'),
   );
 
   if (initialScreen > Object.keys(screenMapping).length) {
-    const attributes = await sqsService.getQueueAttributes([
-      'ApproximateNumberOfMessages',
-    ]);
-    console.log('attributes', attributes);
-
-    if (attributes.ApproximateNumberOfMessages === '0') {
-      const data = await dynamoDbService.scan<IInputData>();
-      const analyticsData = analyticsService.prepare(data);
-      console.log('DATA', data.length);
-      console.log('analyticsData', analyticsData);
-      // TODO: prepare analysis
-      // TODO: save analytics into local storage
-    }
+    analyticsData = localDataService.getAnalytics();
   }
 
   return {
@@ -185,6 +200,7 @@ export const getServerSideProps: GetServerSideProps<IHomePageProps> = async ({
       initialScreen,
       isAdmin,
       userId,
+      analyticsData,
     },
   };
 };

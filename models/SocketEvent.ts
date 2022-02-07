@@ -3,4 +3,5 @@ export enum SocketEvent {
   ReceiveUpdateCount = 'receive_update_count',
   SaveResponse = 'save_response',
   PrepareResults = 'prepare_results',
+  ReceiveAnalyticsData = 'receive_analytics_data',
 }

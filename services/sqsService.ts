@@ -13,6 +13,7 @@ class SqsService {
       QueueUrl: process.env.AWS_SQS_RESPONSE_URL,
       MessageBody: JSON.stringify(msg),
     });
+
     return this.client.send(command);
   }
 

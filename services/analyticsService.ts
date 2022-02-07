@@ -16,7 +16,7 @@ type OutputData = {
 
 class AnalyticsService {
   prepare(inputData: IInputData[]) {
-    const groupedAnswers = inputData.reduce<OutputData>((result, item) => {
+    return inputData.reduce<OutputData>((result, item) => {
       if (!result[item.questionId]) {
         result[item.questionId] = {
           [FormValue.Always]: 0,
@@ -29,9 +29,6 @@ class AnalyticsService {
 
       return result;
     }, {});
-
-    console.log(groupedAnswers);
-    return groupedAnswers;
   }
 }
 
