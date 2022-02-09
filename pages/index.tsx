@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { GetServerSideProps, NextPage } from 'next';
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import io from 'socket.io-client';
 import { Button, Spacer, Text } from '@nextui-org/react';
@@ -22,6 +23,11 @@ interface IHomePageProps {
   userId: string;
   analyticsData: AnalyticsData | null;
 }
+
+const DynamicAnalyticsComponent = dynamic(
+  () => import('../components/Analytics/Analytics'),
+  { ssr: false },
+);
 
 const Home: NextPage<IHomePageProps> = ({
   initialScreen,
@@ -112,11 +118,12 @@ const Home: NextPage<IHomePageProps> = ({
   const screenData = screenMapping[screenNumber];
   const screenEntries = Object.entries(screenMapping);
   const totalScreenCount = screenEntries.length;
+  const finalScreen = screenNumber > totalScreenCount;
 
   // TODO: custom prepare analytics button
 
   function renderResult() {
-    if (screenNumber <= totalScreenCount) {
+    if (!finalScreen) {
       return (
         <Slide
           key={screenNumber}
@@ -133,7 +140,7 @@ const Home: NextPage<IHomePageProps> = ({
     }
 
     if (localAnalyticsData) {
-      return <div>Analytics data</div>;
+      return <DynamicAnalyticsComponent data={localAnalyticsData} />;
     }
 
     return <div>Waiting for results</div>;
@@ -165,7 +172,9 @@ const Home: NextPage<IHomePageProps> = ({
             <Button onClick={handleNextButtonClick}>⇨</Button>
             <Spacer x={2} />
             <Text>
-              {screenNumber} / {screenEntries.length}
+              {finalScreen
+                ? 'Results'
+                : `${screenNumber} / ${screenEntries.length}`}
             </Text>
           </Button.Group>
         )}
