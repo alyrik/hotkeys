@@ -17,7 +17,7 @@ import { AnalyticsData } from '../../models/AnalyticsData';
 import { Spacer } from '@nextui-org/react';
 import { EChartsOption } from 'echarts-for-react/src/types';
 import { FormValue } from '../../models/FormValue';
-import { screenMapping } from '../../config/config';
+import { IMAGE_HOST, screenMapping } from '../../config/config';
 
 interface IAnalyticsProps {
   data: AnalyticsData;
@@ -103,7 +103,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data }) => {
   const preparedDetailedData = Object.entries(data).reduce<
     {
       name: string;
-      values: { [key: string]: { raw: number; formatted: string } };
+      values: { [key: string]: { raw: number; id: number } };
     }[]
   >((result, [key, value]) => {
     const total =
@@ -119,15 +119,15 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data }) => {
       values: {
         [FormValue.Always]: {
           raw: alwaysValue,
-          formatted: `${alwaysValue}%`,
+          id: Number(key),
         },
         [FormValue.Sometimes]: {
           raw: sometimesValue,
-          formatted: `${sometimesValue}%`,
+          id: Number(key),
         },
         [FormValue.Never]: {
           raw: neverValue,
-          formatted: `${neverValue}%`,
+          id: Number(key),
         },
       },
     });
@@ -211,7 +211,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data }) => {
           valueFormatter,
         },
         data: preparedDetailedData.map((item) => ({
-          name: `${item.values[FormValue.Always].raw}%`,
+          name: item.values[FormValue.Always].id,
           value: item.values[FormValue.Always].raw,
         })),
       },
@@ -230,9 +230,10 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data }) => {
         tooltip: {
           valueFormatter,
         },
-        data: preparedDetailedData.map(
-          (item) => item.values[FormValue.Sometimes].raw,
-        ),
+        data: preparedDetailedData.map((item) => ({
+          name: item.values[FormValue.Sometimes].id,
+          value: item.values[FormValue.Sometimes].raw,
+        })),
       },
       {
         name: itemNames[FormValue.Never],
@@ -249,9 +250,10 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data }) => {
         tooltip: {
           valueFormatter,
         },
-        data: preparedDetailedData.map(
-          (item) => item.values[FormValue.Never].raw,
-        ),
+        data: preparedDetailedData.map((item) => ({
+          name: item.values[FormValue.Never].id,
+          value: item.values[FormValue.Never].raw,
+        })),
       },
     ],
   };
@@ -286,8 +288,15 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data }) => {
         }}
         onEvents={{
           click(event: any) {
-            // TODO: Opem modal (?) with clicked GIF
-            console.log('CLICK EVENT', event);
+            const params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,
+width=1278,height=646,left=0,top=0`;
+            const screenData = screenMapping[event.data.name];
+
+            open(
+              `${IMAGE_HOST}${screenData.imageSrc}`,
+              screenData.title,
+              params,
+            );
           },
           legendselectchanged(event: any) {
             // TODO: Sort if only one item is selected
