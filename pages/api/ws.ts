@@ -34,6 +34,8 @@ const handler = (
       ];
       const isAdmin = userId === process.env.ADMIN_TOKEN;
 
+      socket.join(userId);
+
       socket.on(SocketEvent.UpdateCount, (msg: number) => {
         localDataService.setCount(msg);
         socket.broadcast.emit(SocketEvent.ReceiveUpdateCount, msg);
@@ -70,10 +72,20 @@ const handler = (
 
               setTimeout(async () => {
                 const data = await dynamoDbService.scan<IInputData>();
+                localDataService.setRawInputData(data);
                 const analyticsData = analyticsService.prepare(data);
                 localDataService.setAnalytics(analyticsData);
+                const individualAnalyticsData =
+                  analyticsService.prepareIndividual(data, userId);
 
                 io.emit(SocketEvent.ReceiveAnalyticsData, analyticsData);
+
+                if (!isAdmin) {
+                  io.to(userId).emit(
+                    SocketEvent.ReceiveIndividualAnalyticsData,
+                    individualAnalyticsData,
+                  );
+                }
               }, 5000);
             }
           }

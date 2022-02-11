@@ -16,6 +16,7 @@ type OutputData = {
 
 class AnalyticsService {
   prepare(inputData: IInputData[]) {
+    // TODO Deduplicate by userId
     return inputData.reduce<OutputData>((result, item) => {
       if (!result[item.questionId]) {
         result[item.questionId] = {
@@ -29,6 +30,10 @@ class AnalyticsService {
 
       return result;
     }, {});
+  }
+
+  prepareIndividual(inputData: IInputData[], userId: string) {
+    return this.prepare(inputData.filter((data) => data.userId === userId));
   }
 }
 

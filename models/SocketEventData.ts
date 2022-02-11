@@ -9,4 +9,5 @@ export interface SocketEventData {
     answer: FormValue;
   };
   [SocketEvent.ReceiveAnalyticsData]: AnalyticsData;
+  [SocketEvent.ReceiveIndividualAnalyticsData]: AnalyticsData;
 }

@@ -4,4 +4,5 @@ export enum SocketEvent {
   SaveResponse = 'save_response',
   PrepareResults = 'prepare_results',
   ReceiveAnalyticsData = 'receive_analytics_data',
+  ReceiveIndividualAnalyticsData = 'receive_individual_analytics_data',
 }

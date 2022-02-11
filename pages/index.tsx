@@ -16,12 +16,14 @@ import { buildUserIdCookie } from '../helpers/buildCookie';
 import { IMAGE_HOST, screenMapping } from '../config/config';
 import { AnalyticsData } from '../models/AnalyticsData';
 import { SocketEventData } from '../models/SocketEventData';
+import analyticsService from '../services/analyticsService';
 
 interface IHomePageProps {
   initialScreen: number;
   isAdmin: boolean;
   userId: string;
   analyticsData: AnalyticsData | null;
+  individualAnalyticsData: AnalyticsData | null;
 }
 
 const DynamicAnalyticsComponent = dynamic(
@@ -34,11 +36,14 @@ const Home: NextPage<IHomePageProps> = ({
   isAdmin,
   userId,
   analyticsData,
+  individualAnalyticsData,
 }) => {
   const [screenNumber, setScreenNumber] = useState(initialScreen);
   const [formValue, setFormValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [localAnalyticsData, setLocalAnalyticsData] = useState(analyticsData);
+  const [localIndividualAnalyticsData, setLocalIndividualAnalyticsData] =
+    useState(individualAnalyticsData);
   const socketClient = useRef<ReturnType<typeof io>>();
   const formValueRef = useRef(formValue);
   const screenNumberRef = useRef(screenNumber);
@@ -78,6 +83,13 @@ const Home: NextPage<IHomePageProps> = ({
         SocketEvent.ReceiveAnalyticsData,
         (msg: SocketEventData[SocketEvent.ReceiveAnalyticsData]) => {
           setLocalAnalyticsData(msg);
+        },
+      );
+
+      socketClient.current?.on(
+        SocketEvent.ReceiveIndividualAnalyticsData,
+        (msg: SocketEventData[SocketEvent.ReceiveIndividualAnalyticsData]) => {
+          setLocalIndividualAnalyticsData(msg);
         },
       );
 
@@ -140,7 +152,12 @@ const Home: NextPage<IHomePageProps> = ({
     }
 
     if (localAnalyticsData) {
-      return <DynamicAnalyticsComponent data={localAnalyticsData} />;
+      return (
+        <DynamicAnalyticsComponent
+          data={localAnalyticsData}
+          individualData={localIndividualAnalyticsData}
+        />
+      );
     }
 
     return <div>Waiting for results</div>;
@@ -194,6 +211,7 @@ export const getServerSideProps: GetServerSideProps<IHomePageProps> = async ({
   const initialScreen = localDataService.getCount();
 
   let analyticsData: AnalyticsData | null = null;
+  let individualAnalyticsData: AnalyticsData | null = null;
 
   res.setHeader(
     'Set-Cookie',
@@ -202,6 +220,16 @@ export const getServerSideProps: GetServerSideProps<IHomePageProps> = async ({
 
   if (initialScreen > Object.keys(screenMapping).length) {
     analyticsData = localDataService.getAnalytics();
+    const rawInputData = localDataService.getRawInputData();
+
+    // TODO: show top users!!!
+
+    if (rawInputData && !isAdmin) {
+      individualAnalyticsData = analyticsService.prepareIndividual(
+        rawInputData,
+        userId,
+      );
+    }
   }
 
   return {
@@ -210,6 +238,7 @@ export const getServerSideProps: GetServerSideProps<IHomePageProps> = async ({
       isAdmin,
       userId,
       analyticsData,
+      individualAnalyticsData,
     },
   };
 };
