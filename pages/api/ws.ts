@@ -44,11 +44,14 @@ const handler = (
       socket.on(
         SocketEvent.SaveResponse,
         async (msg: SocketEventData[SocketEvent.SaveResponse]) => {
-          if (msg) {
+          try {
             await sqsService.sendMessage<typeof msg>(
               msg,
               String(msg.questionId),
             );
+          } catch (e) {
+            // TODO: push to cloudwatch
+            console.log('SQS FAILED', e);
           }
         },
       );
