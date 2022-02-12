@@ -48,4 +48,8 @@ export const screenMapping: Record<
     imageSrc: 'Indent%3AUnindent+Line+or+Selection.gif',
     title: 'Indent/Unindent Line or Selection',
   },
+  11: {
+    imageSrc: 'Comment+with+Line+Comment.gif',
+    title: 'Comment with Line Comment',
+  },
 };

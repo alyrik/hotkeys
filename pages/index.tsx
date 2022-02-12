@@ -83,6 +83,7 @@ const Home: NextPage<IHomePageProps> = ({
         SocketEvent.ReceiveAnalyticsData,
         (msg: SocketEventData[SocketEvent.ReceiveAnalyticsData]) => {
           setLocalAnalyticsData(msg);
+          socketClient.current?.emit(SocketEvent.PrepareIndividualResults);
         },
       );
 

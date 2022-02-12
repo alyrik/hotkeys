@@ -45,7 +45,10 @@ const handler = (
         SocketEvent.SaveResponse,
         async (msg: SocketEventData[SocketEvent.SaveResponse]) => {
           if (msg) {
-            await sqsService.sendMessage<typeof msg>(msg);
+            await sqsService.sendMessage<typeof msg>(
+              msg,
+              String(msg.questionId),
+            );
           }
         },
       );
@@ -67,29 +70,38 @@ const handler = (
           if (isEmptyQueue(attributes)) {
             checksCount += 1;
 
-            if (checksCount >= 3) {
+            if (checksCount >= 10) {
               clearInterval(interval);
 
-              setTimeout(async () => {
-                const data = await dynamoDbService.scan<IInputData>();
-                localDataService.setRawInputData(data);
-                const analyticsData = analyticsService.prepare(data);
-                localDataService.setAnalytics(analyticsData);
-                const individualAnalyticsData =
-                  analyticsService.prepareIndividual(data, userId);
+              const data = await dynamoDbService.scan<IInputData>();
+              localDataService.setRawInputData(data);
+              const analyticsData = analyticsService.prepare(data);
+              localDataService.setAnalytics(analyticsData);
 
-                io.emit(SocketEvent.ReceiveAnalyticsData, analyticsData);
-
-                if (!isAdmin) {
-                  io.to(userId).emit(
-                    SocketEvent.ReceiveIndividualAnalyticsData,
-                    individualAnalyticsData,
-                  );
-                }
-              }, 5000);
+              io.emit(SocketEvent.ReceiveAnalyticsData, analyticsData);
             }
           }
         }, 1000);
+      });
+
+      socket.on(SocketEvent.PrepareIndividualResults, () => {
+        if (isAdmin) {
+          return;
+        }
+
+        const data = localDataService.getRawInputData();
+
+        if (data) {
+          const individualAnalyticsData = analyticsService.prepareIndividual(
+            data,
+            userId,
+          );
+
+          io.to(userId).emit(
+            SocketEvent.ReceiveIndividualAnalyticsData,
+            individualAnalyticsData,
+          );
+        }
       });
     });
 

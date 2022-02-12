@@ -130,7 +130,7 @@ const prepareTotalOptions = (
     fontSize: 16,
   },
   title: {
-    text: 'Overall usage of IDE functions via hotkeys',
+    text: 'Overall usage of IDE functionality via hotkeys',
     left: 'center',
   },
   tooltip: {
@@ -234,6 +234,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data, individualData }) => {
     [],
   );
 
+  // TODO: use filter and concat instead of sort?
   preparedIndividualDetailedData
     .sort((prev, next) => (next.status === FormValue.Sometimes ? -1 : 1))
     .sort((prev, next) => (next.status === FormValue.Always ? -1 : 1));
@@ -246,8 +247,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data, individualData }) => {
     tooltip: {
       trigger: 'axis',
       axisPointer: {
-        // Use axis to trigger tooltip
-        type: 'shadow', // 'shadow' as default; can also be 'line' or 'shadow'
+        type: 'shadow',
       },
     },
     legend: {},
@@ -344,7 +344,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data, individualData }) => {
           height: 600,
         }}
       />
-      <Spacer y={5} />
+      <Spacer y={3} />
       <ReactEChartsCore
         echarts={echarts}
         option={detailedOption}
@@ -386,7 +386,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data, individualData }) => {
             weight="bold">
             Your results
           </Text>
-          <Spacer y={1} />
+          <Spacer y={2} />
           <ReactEChartsCore
             echarts={echarts}
             option={totalIndividualOptions}
@@ -399,7 +399,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data, individualData }) => {
               height: 600,
             }}
           />
-          <Spacer y={5} />
+          <Spacer y={3} />
           <Collapse.Group splitted={true} style={{ padding: 0 }}>
             {preparedIndividualDetailedData.map((item) => (
               <Collapse
@@ -413,7 +413,6 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data, individualData }) => {
                   overlayBgColorStart="rgba(0, 0, 0, 0)"
                   overlayBgColorEnd="rgba(0, 0, 0, 0.75)"
                   zoomMargin={50}>
-                  {/*TODO: with & height*/}
                   <div>
                     <img
                       src={IMAGE_HOST + item.imageSrc}

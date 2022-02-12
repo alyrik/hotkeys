@@ -8,10 +8,11 @@ import { QueueAttributeName } from '@aws-sdk/client-sqs/dist-types/models/models
 class SqsService {
   private client = new SQSClient({ region: process.env.AWS_REGION });
 
-  async sendMessage<TData>(msg: TData) {
+  async sendMessage<TData>(msg: TData, messageGroupId: string) {
     const command = new SendMessageCommand({
       QueueUrl: process.env.AWS_SQS_RESPONSE_URL,
       MessageBody: JSON.stringify(msg),
+      MessageGroupId: messageGroupId,
     });
 
     return this.client.send(command);
