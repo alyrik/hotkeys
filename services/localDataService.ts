@@ -20,7 +20,7 @@ class LocalDataService {
     db.read();
 
     if (!db.data) {
-      db.data = { count: 1 };
+      db.data = { count: 0 };
       db.write();
     }
 

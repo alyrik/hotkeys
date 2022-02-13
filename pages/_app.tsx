@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { createTheme, CssBaseline, NextUIProvider } from '@nextui-org/react';
 
 import { IMAGE_HOST, screenMapping } from '../config/config';
+import Layout from '../components/Layout/Layout';
 
 const screenEntries = Object.entries(screenMapping);
 
@@ -28,7 +29,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         ))}
       </Head>
       <CssBaseline />
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </NextUIProvider>
   );
 }

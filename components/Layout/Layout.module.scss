@@ -1,0 +1,14 @@
+.root {
+  display: grid;
+  min-height: 100vh;
+  grid-template-rows: 1fr auto;
+  grid-template-areas: 'content' 'footer';
+}
+
+.content {
+  grid-area: content;
+}
+
+.footer {
+  grid-area: footer;
+}

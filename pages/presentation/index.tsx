@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { GetServerSideProps, NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import io from 'socket.io-client';
-import { Button, Spacer, Text } from '@nextui-org/react';
+import { Button, Container, Row, Spacer, Text } from '@nextui-org/react';
 import { v4 as uuidv4 } from 'uuid';
 
 import styles from './PresentationPage.module.css';
@@ -28,6 +28,10 @@ interface IPresentationPageProps {
 
 const DynamicAnalyticsComponent = dynamic(
   () => import('../../components/Analytics/Analytics'),
+  { ssr: false },
+);
+const DynamicCustomCountdownComponent = dynamic(
+  () => import('../../components/CustomCountdown/CustomCountdown'),
   { ssr: false },
 );
 
@@ -63,7 +67,9 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
         (count: number) => {
           setIsProcessing(true);
 
-          if (formValueRef.current) {
+          const nextCount = Number(count);
+
+          if (formValueRef.current && nextCount > 0) {
             socketClient.current?.emit(SocketEvent.SaveResponse, {
               questionId: screenNumberRef.current,
               userId,
@@ -73,7 +79,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
 
           setTimeout(() => {
             setFormValue('');
-            setScreenNumber(Number(count));
+            setScreenNumber(nextCount);
             setIsProcessing(false);
           }, 500);
         },
@@ -123,7 +129,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
 
     if (!confirm) return;
 
-    const nextCount = 1;
+    const nextCount = 0;
     setScreenNumber(nextCount);
     socketClient.current?.emit(SocketEvent.UpdateCount, nextCount);
   }
@@ -136,6 +142,28 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
   // TODO: custom prepare analytics button
 
   function renderResult() {
+    if (screenNumber === 0) {
+      return (
+        <Container style={{ padding: 0 }}>
+          <Row>
+            <Text
+              h1
+              size={56}
+              css={{
+                textGradient: '45deg, $blue300 -30%, $pink700 60%',
+                letterSpacing: '$normal',
+              }}
+              weight="bold">
+              Coming in
+            </Text>
+          </Row>
+          <Row>
+            <DynamicCustomCountdownComponent />
+          </Row>
+        </Container>
+      );
+    }
+
     if (!finalScreen) {
       return (
         <Slide
@@ -182,8 +210,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
             />
           ))}
       </Head>
-
-      <main className={styles.main}>
+      <section className={styles.main}>
         {isAdmin && (
           <Button.Group color="secondary">
             <Button onClick={handleResetButtonClick}>⇦⇦⇦</Button>
@@ -198,7 +225,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
         )}
         <Spacer y={2} />
         {renderResult()}
-      </main>
+      </section>
     </div>
   );
 };

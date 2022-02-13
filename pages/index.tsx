@@ -1,9 +1,8 @@
-import type { GetServerSideProps, NextPage } from 'next';
-import { Container, Link, Row, Text } from '@nextui-org/react';
-
-import localDataService from '../services/localDataService';
-import { CookieKey } from '../models/CookieKey';
 import React from 'react';
+import type { GetServerSideProps, NextPage } from 'next';
+import { Container, Row, Text } from '@nextui-org/react';
+
+import { CookieKey } from '../models/CookieKey';
 
 interface IIndexPageProps {
   isAdmin: boolean;
@@ -17,7 +16,7 @@ const IndexPage: NextPage<IIndexPageProps> = ({ isAdmin, userId }) => {
       direction="column"
       display="flex"
       justify="space-between"
-      style={{ minHeight: '100vh' }}>
+      style={{ minHeight: '100%' }}>
       <Container
         direction="column"
         display="flex"
@@ -41,20 +40,6 @@ const IndexPage: NextPage<IIndexPageProps> = ({ isAdmin, userId }) => {
           </Text>
         </Row>
       </Container>
-      <Container css={{ padding: '15px 0' }}>
-        <Row justify="center" align="center">
-          <Text size={14} css={{ letterSpacing: '$normal' }}>
-            © Created by{' '}
-            <Link
-              href="https://www.linkedin.com/in/kiryl-anokhin-462aab114/"
-              target="_blank"
-              rel="noopener noreferrer">
-              Kiryl Anokhin
-            </Link>{' '}
-            in 2022
-          </Text>
-        </Row>
-      </Container>
     </Container>
   );
 };
@@ -64,9 +49,6 @@ export const getServerSideProps: GetServerSideProps<IIndexPageProps> = async ({
 }) => {
   const userId = req.cookies[CookieKey.UserId] ?? null;
   const isAdmin = userId === process.env.ADMIN_TOKEN;
-
-  // TODO: redirect if presentation has started
-  const initialScreen = localDataService.getCount();
 
   return {
     props: {
