@@ -38,6 +38,12 @@ const handler = (
 
       socket.on(SocketEvent.UpdateCount, (msg: number) => {
         localDataService.setCount(msg);
+
+        if (msg === 0) {
+          localDataService.setRawInputData(null!);
+          localDataService.setAnalytics(null!);
+        }
+
         socket.broadcast.emit(SocketEvent.ReceiveUpdateCount, msg);
       });
 
