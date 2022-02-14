@@ -232,18 +232,22 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
 
 export const getServerSideProps: GetServerSideProps<
   IPresentationPageProps
-> = async ({ req, res }) => {
-  const userId = req.cookies[CookieKey.UserId] ?? uuidv4();
+> = async ({ req, res, query }) => {
+  const letMeInValue = query.letMeIn;
+  const initialUserId = req.cookies[CookieKey.UserId];
+  const userId = initialUserId ?? letMeInValue ?? uuidv4();
   const isAdmin = userId === process.env.ADMIN_TOKEN;
   const initialScreen = localDataService.getCount();
 
   let analyticsData: AnalyticsData | null = null;
   let individualAnalyticsData: AnalyticsData | null = null;
 
-  res.setHeader(
-    'Set-Cookie',
-    buildUserIdCookie(userId, process.env.NODE_ENV === 'production'),
-  );
+  if (!initialUserId) {
+    res.setHeader(
+      'Set-Cookie',
+      buildUserIdCookie(userId, process.env.NODE_ENV === 'production'),
+    );
+  }
 
   if (initialScreen > Object.keys(screenMapping).length) {
     analyticsData = localDataService.getAnalytics();
