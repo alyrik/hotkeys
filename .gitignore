@@ -40,3 +40,4 @@ yarn-error.log*
 .data.json
 .env
 .deploy
+.todo

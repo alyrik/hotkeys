@@ -12,7 +12,7 @@ import {
   TransformComponent,
 } from 'echarts/components';
 import { LabelLayout, UniversalTransition } from 'echarts/features';
-import { Collapse, Spacer, Text } from '@nextui-org/react';
+import { Collapse, Container, Spacer, Text } from '@nextui-org/react';
 
 import { AnalyticsData } from '../../models/AnalyticsData';
 import { EChartsOption } from 'echarts-for-react/src/types';
@@ -23,6 +23,8 @@ import Zoom from 'react-medium-image-zoom';
 interface IAnalyticsProps {
   data: AnalyticsData;
   individualData: AnalyticsData | null;
+  topUsersData: AnalyticsData[] | null;
+  userPlace: number | null;
 }
 
 interface ITotalValues {
@@ -45,6 +47,11 @@ const itemSymbols = {
   [FormValue.Always]: '✓',
   [FormValue.Sometimes]: '⚠',
   [FormValue.Never]: '✗',
+};
+const placeMap: Record<number, string> = {
+  1: '1st',
+  2: '2nd',
+  3: '3rd',
 };
 
 echarts.use([
@@ -157,7 +164,12 @@ const prepareTotalOptions = (
   ],
 });
 
-const Analytics: React.FC<IAnalyticsProps> = ({ data, individualData }) => {
+const Analytics: React.FC<IAnalyticsProps> = ({
+  data,
+  individualData,
+  topUsersData,
+  userPlace,
+}) => {
   const totalValues = prepareTotalValues(data);
   const totalIndividualValues = prepareTotalValues(individualData);
   const totalSum = prepareTotalSum(totalValues);
@@ -328,10 +340,51 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data, individualData }) => {
     ],
   };
 
-  // TODO: render personal report
-
   return (
     <div>
+      {/* TODO: render user place */}
+      {userPlace && (
+        <Container display="flex" direction="column" justify="center">
+          <Text
+            size={50}
+            css={{
+              textGradient: '45deg, #f3ec78 -20%, #af4261 50%',
+              letterSpacing: '$normal',
+            }}
+            weight="bold">
+            Congratulations!
+          </Text>
+          <Text
+            size={50}
+            css={{
+              textGradient: '45deg, #f3ec78 -20%, #af4261 50%',
+              letterSpacing: '$normal',
+            }}
+            weight="bold">
+            You&apos;re in the {placeMap[userPlace]} place!
+          </Text>
+          <Text
+            size={50}
+            css={{
+              textGradient: '45deg, #f3ec78 -20%, #af4261 50%',
+              letterSpacing: '$normal',
+            }}
+            weight="bold">
+            👍
+          </Text>
+          <Spacer y={2} />
+        </Container>
+      )}
+      <Text
+        h2
+        size={40}
+        css={{
+          textGradient: '45deg, $blue500 -20%, $pink500 50%',
+        }}
+        weight="bold">
+        Total results
+      </Text>
+      <Spacer y={2} />
       <ReactEChartsCore
         echarts={echarts}
         option={totalOptions}
@@ -424,6 +477,53 @@ const Analytics: React.FC<IAnalyticsProps> = ({ data, individualData }) => {
               </Collapse>
             ))}
           </Collapse.Group>
+        </>
+      )}
+      {topUsersData && (
+        <>
+          <Spacer y={5} />
+          <Text
+            h2
+            size={40}
+            css={{
+              textGradient: '45deg, $blue500 -20%, $pink500 50%',
+            }}
+            weight="bold">
+            Top results
+          </Text>
+          <Spacer y={2} />
+          {topUsersData.map((data, index) => {
+            const totalIndividualValues = prepareTotalValues(data);
+            const totalIndividualSum = prepareTotalSum(totalIndividualValues);
+            const preparedIndividualOverallData = prepareOverallData(
+              totalIndividualValues,
+              totalIndividualSum,
+            );
+            const totalIndividualOptions = prepareTotalOptions(
+              preparedIndividualOverallData,
+            );
+
+            return (
+              <div key={index}>
+                <Text size={30} weight="bold">
+                  {index + 1}
+                </Text>
+                <ReactEChartsCore
+                  echarts={echarts}
+                  option={totalIndividualOptions}
+                  notMerge={true}
+                  lazyUpdate={true}
+                  theme="dark"
+                  style={{ height: '600px' }}
+                  opts={{
+                    width: 800,
+                    height: 600,
+                  }}
+                />
+                <Spacer y={1} />
+              </div>
+            );
+          })}
         </>
       )}
     </div>

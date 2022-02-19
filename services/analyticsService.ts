@@ -1,3 +1,6 @@
+import groupBy from 'lodash.groupby';
+import sortBy from 'lodash.sortby';
+
 import { FormValue } from '../models/FormValue';
 
 export interface IInputData {
@@ -16,7 +19,6 @@ type OutputData = {
 
 class AnalyticsService {
   prepare(inputData: IInputData[]) {
-    // TODO Deduplicate by userId
     return inputData.reduce<OutputData>((result, item) => {
       if (!result[item.questionId]) {
         result[item.questionId] = {
@@ -34,6 +36,22 @@ class AnalyticsService {
 
   prepareIndividual(inputData: IInputData[], userId: string) {
     return this.prepare(inputData.filter((data) => data.userId === userId));
+  }
+
+  prepareTopUsers(inputData: IInputData[]) {
+    const filteredItems = inputData.filter(
+      (item) => item.answer === FormValue.Always,
+    );
+    const groups = groupBy(filteredItems, (item) => item.userId);
+    const sortedGroups = sortBy(groups, (group) => -group.length).slice(0, 3);
+    const userIds = sortedGroups.map((group) => group[0]?.userId);
+
+    return {
+      userIds,
+      data: userIds.map((userId) =>
+        this.prepareIndividual(inputData, userId),
+      ),
+    };
   }
 }
 

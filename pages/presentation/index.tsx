@@ -23,7 +23,8 @@ interface IPresentationPageProps {
   isAdmin: boolean;
   userId: string;
   analyticsData: AnalyticsData | null;
-  individualAnalyticsData: AnalyticsData | null;
+  individualAnalyticsData: AnalyticsData[] | null;
+  userPlace: number | null;
 }
 
 const DynamicAnalyticsComponent = dynamic(
@@ -41,6 +42,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
   userId,
   analyticsData,
   individualAnalyticsData,
+  userPlace,
 }) => {
   const [screenNumber, setScreenNumber] = useState(initialScreen);
   const [formValue, setFormValue] = useState('');
@@ -184,7 +186,11 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
       return (
         <DynamicAnalyticsComponent
           data={localAnalyticsData}
-          individualData={localIndividualAnalyticsData}
+          individualData={
+            isAdmin ? null : localIndividualAnalyticsData?.[0] ?? null
+          }
+          topUsersData={isAdmin ? localIndividualAnalyticsData : null}
+          userPlace={userPlace}
         />
       );
     }
@@ -240,7 +246,8 @@ export const getServerSideProps: GetServerSideProps<
   const initialScreen = localDataService.getCount();
 
   let analyticsData: AnalyticsData | null = null;
-  let individualAnalyticsData: AnalyticsData | null = null;
+  let individualAnalyticsData: AnalyticsData[] | null = null;
+  let userPlace: number | null = null;
 
   if (!initialUserId) {
     res.setHeader(
@@ -253,13 +260,16 @@ export const getServerSideProps: GetServerSideProps<
     analyticsData = localDataService.getAnalytics();
     const rawInputData = localDataService.getRawInputData();
 
-    // TODO: show top users!!!
+    if (rawInputData) {
+      const topUsersData = analyticsService.prepareTopUsers(rawInputData);
 
-    if (rawInputData && !isAdmin) {
-      individualAnalyticsData = analyticsService.prepareIndividual(
-        rawInputData,
-        userId,
+      individualAnalyticsData = isAdmin
+        ? topUsersData.data
+        : [analyticsService.prepareIndividual(rawInputData, userId)];
+      const rawUserPlace = topUsersData.userIds.findIndex(
+        (id) => id === userId,
       );
+      userPlace = rawUserPlace > -1 ? rawUserPlace + 1 : null;
     }
   }
 
@@ -270,6 +280,7 @@ export const getServerSideProps: GetServerSideProps<
       userId,
       analyticsData,
       individualAnalyticsData,
+      userPlace,
     },
   };
 };

@@ -9,7 +9,7 @@ async function runInstance() {
 
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(0);
-  await page.goto('http://localhost:3000');
+  await page.goto('http://localhost:3000/presentation');
 
   setInterval(async () => {
     const itemToClick = getRandomInt(1, 3);
@@ -21,7 +21,7 @@ async function runInstance() {
 }
 
 (async () => {
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 15; i++) {
     runInstance();
   }
 })();

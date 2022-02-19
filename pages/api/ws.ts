@@ -94,23 +94,22 @@ const handler = (
       });
 
       socket.on(SocketEvent.PrepareIndividualResults, () => {
-        if (isAdmin) {
+        const data = localDataService.getRawInputData();
+
+        if (!data) {
           return;
         }
 
-        const data = localDataService.getRawInputData();
+        const individualAnalyticsData = isAdmin
+          ? analyticsService.prepareTopUsers(data)
+          : [analyticsService.prepareIndividual(data, userId)];
 
-        if (data) {
-          const individualAnalyticsData = analyticsService.prepareIndividual(
-            data,
-            userId,
-          );
+        // TODO: send users place
 
-          io.to(userId).emit(
-            SocketEvent.ReceiveIndividualAnalyticsData,
-            individualAnalyticsData,
-          );
-        }
+        io.to(userId).emit(
+          SocketEvent.ReceiveIndividualAnalyticsData,
+          individualAnalyticsData,
+        );
       });
     });
 
