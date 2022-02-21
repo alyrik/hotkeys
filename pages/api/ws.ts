@@ -100,16 +100,25 @@ const handler = (
           return;
         }
 
-        const individualAnalyticsData = isAdmin
-          ? analyticsService.prepareTopUsers(data)
-          : [analyticsService.prepareIndividual(data, userId)];
+        const topUsersData = analyticsService.prepareTopUsers(data);
 
-        // TODO: send users place
+        const individualAnalyticsData = isAdmin
+          ? topUsersData.data
+          : [analyticsService.prepareIndividual(data, userId)];
 
         io.to(userId).emit(
           SocketEvent.ReceiveIndividualAnalyticsData,
           individualAnalyticsData,
         );
+
+        const userPlace = analyticsService.findUserPlace(
+          topUsersData.userIds,
+          userId,
+        );
+
+        if (userPlace) {
+          io.to(userId).emit(SocketEvent.ReceiveUserPlace, userPlace);
+        }
       });
     });
 

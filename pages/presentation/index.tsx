@@ -50,6 +50,8 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
   const [localAnalyticsData, setLocalAnalyticsData] = useState(analyticsData);
   const [localIndividualAnalyticsData, setLocalIndividualAnalyticsData] =
     useState(individualAnalyticsData);
+  const [localUserPlace, setLocalUserPlace] = useState(userPlace);
+
   const socketClient = useRef<ReturnType<typeof io>>();
   const formValueRef = useRef(formValue);
   const screenNumberRef = useRef(screenNumber);
@@ -102,7 +104,12 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
         },
       );
 
-      // TODO: on receive results - show results. Show spinner before
+      socketClient.current?.on(
+        SocketEvent.ReceiveUserPlace,
+        (msg: SocketEventData[SocketEvent.ReceiveUserPlace]) => {
+          setLocalUserPlace(msg);
+        },
+      );
 
       socketClient.current?.on('disconnect', () => {
         console.log('disconnected');
@@ -190,7 +197,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
             isAdmin ? null : localIndividualAnalyticsData?.[0] ?? null
           }
           topUsersData={isAdmin ? localIndividualAnalyticsData : null}
-          userPlace={userPlace}
+          userPlace={localUserPlace}
         />
       );
     }
@@ -262,14 +269,10 @@ export const getServerSideProps: GetServerSideProps<
 
     if (rawInputData) {
       const topUsersData = analyticsService.prepareTopUsers(rawInputData);
-
       individualAnalyticsData = isAdmin
         ? topUsersData.data
         : [analyticsService.prepareIndividual(rawInputData, userId)];
-      const rawUserPlace = topUsersData.userIds.findIndex(
-        (id) => id === userId,
-      );
-      userPlace = rawUserPlace > -1 ? rawUserPlace + 1 : null;
+      userPlace = analyticsService.findUserPlace(topUsersData.userIds, userId);
     }
   }
 

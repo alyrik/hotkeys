@@ -48,10 +48,14 @@ class AnalyticsService {
 
     return {
       userIds,
-      data: userIds.map((userId) =>
-        this.prepareIndividual(inputData, userId),
-      ),
+      data: userIds.map((userId) => this.prepareIndividual(inputData, userId)),
     };
+  }
+
+  findUserPlace(userIds: string[], currentUserId: string) {
+    const rawUserPlace = userIds.findIndex((id) => id === currentUserId);
+
+    return rawUserPlace > -1 ? rawUserPlace + 1 : null;
   }
 }
 

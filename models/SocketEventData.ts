@@ -10,4 +10,5 @@ export interface SocketEventData {
   };
   [SocketEvent.ReceiveAnalyticsData]: AnalyticsData;
   [SocketEvent.ReceiveIndividualAnalyticsData]: AnalyticsData[];
+  [SocketEvent.ReceiveUserPlace]: number;
 }

@@ -6,4 +6,5 @@ export enum SocketEvent {
   PrepareIndividualResults = 'prepare_individual_results',
   ReceiveAnalyticsData = 'receive_analytics_data',
   ReceiveIndividualAnalyticsData = 'receive_individual_analytics_data',
+  ReceiveUserPlace = 'receive_user_place',
 }
