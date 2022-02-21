@@ -3,7 +3,14 @@ import type { GetServerSideProps, NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import io from 'socket.io-client';
-import { Button, Container, Row, Spacer, Text } from '@nextui-org/react';
+import {
+  Button,
+  Container,
+  Loading,
+  Row,
+  Spacer,
+  Text,
+} from '@nextui-org/react';
 import { v4 as uuidv4 } from 'uuid';
 
 import styles from './PresentationPage.module.css';
@@ -202,7 +209,16 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
       );
     }
 
-    return <div>Waiting for results</div>;
+    return (
+      <Container
+        style={{ padding: 0, paddingTop: 100 }}
+        display="flex"
+        justify="center">
+        <Row justify="center">
+          <Loading color="primary" size="xl" />
+        </Row>
+      </Container>
+    );
   }
 
   return (
