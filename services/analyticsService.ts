@@ -35,7 +35,13 @@ class AnalyticsService {
   }
 
   prepareIndividual(inputData: IInputData[], userId: string) {
-    return this.prepare(inputData.filter((data) => data.userId === userId));
+    const userData = inputData.filter((data) => data.userId === userId);
+
+    if (!userData.length) {
+      return null;
+    }
+
+    return this.prepare(userData);
   }
 
   prepareTopUsers(inputData: IInputData[]) {
@@ -48,7 +54,7 @@ class AnalyticsService {
 
     return {
       userIds,
-      data: userIds.map((userId) => this.prepareIndividual(inputData, userId)),
+      data: userIds.map((userId) => this.prepareIndividual(inputData, userId)!),
     };
   }
 

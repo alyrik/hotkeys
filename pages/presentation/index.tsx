@@ -285,9 +285,17 @@ export const getServerSideProps: GetServerSideProps<
 
     if (rawInputData) {
       const topUsersData = analyticsService.prepareTopUsers(rawInputData);
-      individualAnalyticsData = isAdmin
-        ? topUsersData.data
-        : [analyticsService.prepareIndividual(rawInputData, userId)];
+
+      if (isAdmin) {
+        individualAnalyticsData = topUsersData.data;
+      } else {
+        const individualData = analyticsService.prepareIndividual(
+          rawInputData,
+          userId,
+        );
+        individualAnalyticsData = individualData ? [individualData] : null;
+      }
+
       userPlace = analyticsService.findUserPlace(topUsersData.userIds, userId);
     }
   }

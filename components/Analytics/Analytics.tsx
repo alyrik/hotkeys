@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import * as echarts from 'echarts/core';
 import { BarChart, PieChart } from 'echarts/charts';
@@ -13,6 +13,8 @@ import {
 } from 'echarts/components';
 import { LabelLayout, UniversalTransition } from 'echarts/features';
 import { Collapse, Container, Spacer, Text } from '@nextui-org/react';
+import orderBy from 'lodash.orderby';
+import sortBy from 'lodash.sortby';
 
 import { AnalyticsData } from '../../models/AnalyticsData';
 import { EChartsOption } from 'echarts-for-react/src/types';
@@ -170,6 +172,8 @@ const Analytics: React.FC<IAnalyticsProps> = ({
   topUsersData,
   userPlace,
 }) => {
+  const [shownImages, setShownImages] = useState<string[]>([]);
+
   const totalValues = prepareTotalValues(data);
   const totalIndividualValues = prepareTotalValues(individualData);
   const totalSum = prepareTotalSum(totalValues);
@@ -181,7 +185,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
     totalIndividualSum,
   );
 
-  const preparedDetailedData = Object.entries(data).reduce<
+  let preparedDetailedData = Object.entries(data).reduce<
     {
       name: string;
       values: { [key: string]: { raw: number; id: number } };
@@ -215,17 +219,16 @@ const Analytics: React.FC<IAnalyticsProps> = ({
 
     return result;
   }, []);
-  preparedDetailedData
-    .sort(
-      (prev, next) =>
-        next.values[FormValue.Never].raw - prev.values[FormValue.Never].raw,
-    )
-    .sort(
-      (prev, next) =>
-        prev.values[FormValue.Always].raw - next.values[FormValue.Always].raw,
-    );
+  preparedDetailedData = orderBy(
+    preparedDetailedData,
+    [
+      (item) => item.values[FormValue.Always].raw,
+      (item) => item.values[FormValue.Never].raw,
+    ],
+    ['asc', 'desc'],
+  );
 
-  const preparedIndividualDetailedData = Object.entries(
+  let preparedIndividualDetailedData = Object.entries(
     individualData ?? {},
   ).reduce<{ name: string; status: FormValue; imageSrc: string }[]>(
     (result, [key, value]) => {
@@ -246,10 +249,10 @@ const Analytics: React.FC<IAnalyticsProps> = ({
     [],
   );
 
-  // TODO: use filter and concat instead of sort?
-  preparedIndividualDetailedData
-    .sort((prev, next) => (next.status === FormValue.Sometimes ? -1 : 1))
-    .sort((prev, next) => (next.status === FormValue.Always ? -1 : 1));
+  preparedIndividualDetailedData = sortBy(preparedIndividualDetailedData, [
+    (item) => item.status === FormValue.Always,
+    (item) => item.status === FormValue.Sometimes,
+  ]);
 
   const totalOptions = prepareTotalOptions(preparedOverallData);
   const totalIndividualOptions = prepareTotalOptions(
@@ -340,9 +343,14 @@ const Analytics: React.FC<IAnalyticsProps> = ({
     ],
   };
 
+  function handleCollapseChange(name: string) {
+    if (!shownImages.includes(name)) {
+      setShownImages([...shownImages, name]);
+    }
+  }
+
   return (
     <div>
-      {/* TODO: render user place */}
       {userPlace && (
         <Container display="flex" direction="column" justify="center">
           <Text
@@ -421,10 +429,6 @@ const Analytics: React.FC<IAnalyticsProps> = ({
               params,
             );
           },
-          legendselectchanged(event: any) {
-            // TODO: Sort if only one item is selected
-            console.log('changed', event);
-          },
         }}
       />
       {individualData && (
@@ -457,23 +461,26 @@ const Analytics: React.FC<IAnalyticsProps> = ({
             {preparedIndividualDetailedData.map((item) => (
               <Collapse
                 key={item.name}
+                onChange={() => handleCollapseChange(item.name)}
                 title={
                   <Text size={24} weight="bold" color={itemStyles[item.status]}>
                     {itemSymbols[item.status]} {item.name}
                   </Text>
                 }>
-                <Zoom
-                  overlayBgColorStart="rgba(0, 0, 0, 0)"
-                  overlayBgColorEnd="rgba(0, 0, 0, 0.75)"
-                  zoomMargin={50}>
-                  <div>
-                    <img
-                      src={IMAGE_HOST + item.imageSrc}
-                      alt={item.name}
-                      width="100%"
-                    />
-                  </div>
-                </Zoom>
+                {shownImages.includes(item.name) && (
+                  <Zoom
+                    overlayBgColorStart="rgba(0, 0, 0, 0)"
+                    overlayBgColorEnd="rgba(0, 0, 0, 0.75)"
+                    zoomMargin={50}>
+                    <div>
+                      <img
+                        src={IMAGE_HOST + item.imageSrc}
+                        alt={item.name}
+                        width="100%"
+                      />
+                    </div>
+                  </Zoom>
+                )}
               </Collapse>
             ))}
           </Collapse.Group>
