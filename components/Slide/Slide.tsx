@@ -12,8 +12,9 @@ interface ISlideProps {
   subTitle?: string;
   formValue: FormValue | string;
   onFormChange(value: FormValue): void;
-  isLoading: boolean;
-  isDisabled: boolean;
+  isLoading?: boolean;
+  isDisabled?: boolean;
+  shouldIndicateSuccess?: boolean;
 }
 
 const Slide: FC<ISlideProps> = ({
@@ -25,6 +26,7 @@ const Slide: FC<ISlideProps> = ({
   onFormChange,
   isLoading,
   isDisabled,
+  shouldIndicateSuccess,
 }) => {
   return (
     <div
@@ -35,7 +37,7 @@ const Slide: FC<ISlideProps> = ({
         <Card.Header
           css={{
             transition: 'background 250ms ease',
-            background: formValue ? '$success' : '',
+            background: shouldIndicateSuccess && formValue ? '$success' : '',
           }}>
           <Col>
             <Text

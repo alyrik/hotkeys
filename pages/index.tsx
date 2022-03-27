@@ -1,6 +1,7 @@
 import React from 'react';
 import type { GetServerSideProps, NextPage } from 'next';
-import { Container, Row, Text } from '@nextui-org/react';
+import { useRouter } from 'next/router';
+import { Button, Container, Row } from '@nextui-org/react';
 
 import { CookieKey } from '../models/CookieKey';
 
@@ -10,6 +11,12 @@ interface IIndexPageProps {
 }
 
 const IndexPage: NextPage<IIndexPageProps> = ({ isAdmin, userId }) => {
+  const router = useRouter();
+
+  function handleStartButtonClick() {
+    router.push('/survey');
+  }
+
   return (
     <Container
       as="main"
@@ -23,21 +30,9 @@ const IndexPage: NextPage<IIndexPageProps> = ({ isAdmin, userId }) => {
         justify="center"
         css={{ flex: '1' }}>
         <Row justify="center" align="center">
-          <Text
-            h1
-            size={56}
-            css={{
-              textGradient: '45deg, $blue500 -30%, $pink500 60%',
-              letterSpacing: '$normal',
-            }}
-            weight="bold">
-            Website is under construction
-          </Text>
-        </Row>
-        <Row justify="center" align="center">
-          <Text size={34} css={{ letterSpacing: '$normal' }}>
-            Follow the instructions
-          </Text>
+          <Button color="gradient" size="xl" onClick={handleStartButtonClick}>
+            Take survey!
+          </Button>
         </Row>
       </Container>
     </Container>

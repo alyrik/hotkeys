@@ -192,6 +192,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
           onFormChange={(value: FormValue) => setFormValue(value)}
           isLoading={isProcessing}
           isDisabled={isAdmin}
+          shouldIndicateSuccess={true}
         />
       );
     }

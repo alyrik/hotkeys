@@ -2,6 +2,7 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { createTheme, CssBaseline, NextUIProvider } from '@nextui-org/react';
+import NextNProgress from 'nextjs-progressbar';
 
 import { IMAGE_HOST, screenMapping } from '../config/config';
 import Layout from '../components/Layout/Layout';
@@ -29,6 +30,13 @@ function MyApp({ Component, pageProps }: AppProps) {
         ))}
       </Head>
       <CssBaseline />
+      <NextNProgress
+        color="#29D"
+        startPosition={0.3}
+        stopDelayMs={200}
+        height={3}
+        showOnShallow={true}
+      />
       <Layout>
         <Component {...pageProps} />
       </Layout>
