@@ -5,11 +5,12 @@ import { Button, Container, Loading, Row, Spacer } from '@nextui-org/react';
 import { v4 as uuidv4 } from 'uuid';
 
 import styles from './SurveyPage.module.css';
-import Slide from '../../components/Slide/Slide';
-import { FormValue } from '../../models/FormValue';
-import { CookieKey } from '../../models/CookieKey';
-import { buildUserIdCookie } from '../../helpers/buildCookie';
-import { IMAGE_HOST, screenMapping } from '../../config/config';
+import Slide from '@/components/Slide/Slide';
+import { FormValue } from '@/models/FormValue';
+import { CookieKey } from '@/models/CookieKey';
+import { buildUserIdCookie } from '@/helpers/buildCookie';
+import { IMAGE_HOST, screenMapping } from '@/config/config';
+import { useSaveIndividualAnswer } from '@/mutations/hooks/useSaveIndividualAnswer';
 
 interface ISurveyPageProps {
   initialScreen: number;
@@ -18,13 +19,14 @@ interface ISurveyPageProps {
 
 const SurveyPage: NextPage<ISurveyPageProps> = ({ initialScreen, userId }) => {
   const [screenNumber, setScreenNumber] = useState(initialScreen);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [formValue, setFormValue] = useState('');
 
   const screenData = screenMapping[screenNumber];
   const screenEntries = Object.entries(screenMapping);
   const totalScreenCount = screenEntries.length;
   const finalScreen = screenNumber > totalScreenCount;
+
+  const { mutate: saveIndividualAnswer, isLoading } = useSaveIndividualAnswer();
 
   // TODO: custom prepare analytics button
 
@@ -33,15 +35,21 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ initialScreen, userId }) => {
   }
 
   function handleSubmitButtonClick() {
-    setIsProcessing(true);
-
-    // TODO: save to special table via special AWS lambda
-
-    setTimeout(() => {
-      setIsProcessing(false);
-      setFormValue('');
-      setScreenNumber(screenNumber + 1);
-    }, 500);
+    saveIndividualAnswer(
+      {
+        questionId: screenNumber,
+        answer: formValue,
+      },
+      {
+        onSuccess() {
+          setFormValue('');
+          setScreenNumber(screenNumber + 1);
+        },
+        onError(e) {
+          // TODO: render error
+        },
+      },
+    );
   }
 
   function renderResult() {
@@ -67,7 +75,7 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ initialScreen, userId }) => {
             subTitle={screenData.subTitle}
             imageSrc={`${IMAGE_HOST}${screenData.imageSrc}`}
             formValue={formValue}
-            isLoading={isProcessing}
+            isLoading={isLoading}
             onFormChange={(value: FormValue) => setFormValue(value)}
           />
           <Spacer y={2} />
@@ -76,8 +84,8 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ initialScreen, userId }) => {
             size="xl"
             disabled={!formValue}
             onClick={handleSubmitButtonClick}
-            clickable={!isProcessing}>
-            {isProcessing ? <Loading color="white" /> : 'Submit'}
+            clickable={!isLoading}>
+            {isLoading ? <Loading color="white" /> : 'Submit'}
           </Button>
         </>
       );
