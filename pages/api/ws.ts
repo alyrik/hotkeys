@@ -1,15 +1,15 @@
 import { Server } from 'socket.io';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { parse } from 'cookie';
-
-import { SocketEvent } from '../../models/SocketEvent';
-import localDataService from '../../services/localDataService';
-import { SocketEventData } from '../../models/SocketEventData';
-import { CookieKey } from '../../models/CookieKey';
-import sqsService from '../../services/sqsService';
-import dynamoDbService from '../../services/dynamoDbService';
 import { GetQueueAttributesResult } from '@aws-sdk/client-sqs';
-import analyticsService, { IInputData } from '../../services/analyticsService';
+
+import { SocketEvent } from '@/models/SocketEvent';
+import localDataService from '@/services/localDataService';
+import { SocketEventData } from '@/models/SocketEventData';
+import { CookieKey } from '@/models/CookieKey';
+import sqsService from '@/services/sqsService';
+import dynamoDbService from '@/services/dynamoDbService';
+import analyticsService, { IInputData } from '@/services/analyticsService';
 
 function isEmptyQueue(attributes: GetQueueAttributesResult['Attributes']) {
   return (
@@ -82,7 +82,9 @@ const handler = (
             if (checksCount >= 10) {
               clearInterval(interval);
 
-              const data = await dynamoDbService.scan<IInputData>();
+              const data = await dynamoDbService.scan<IInputData>({
+                tableName: process.env.AWS_TABLE!,
+              });
               localDataService.setRawInputData(data);
               const analyticsData = analyticsService.prepare(data);
               localDataService.setAnalytics(analyticsData);
