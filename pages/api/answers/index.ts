@@ -6,20 +6,29 @@ import dynamoDbService from '@/services/dynamoDbService';
 import { FormValue } from '@/models/FormValue';
 
 async function handleSaveIndividualAnswer(
-  answerData: IIndividualAnswerDto,
+  { answer, questionId }: IIndividualAnswerDto,
   userId: string,
 ) {
+  const isFirstQuestion = questionId === 1;
+
+  const UpdateExpression = `set updatedAt = :updatedAt, answers${
+    isFirstQuestion ? '' : `[${questionId}]`
+  } = ${isFirstQuestion ? ':firstAnswer' : ':answer'}`;
+  const answerValue = { S: answer || FormValue.Never };
+  const ExpressionAttributeValues = {
+    ':updatedAt': { N: String(Date.now()) },
+    [isFirstQuestion ? ':firstAnswer' : ':answer']: isFirstQuestion
+      ? {
+          L: [answerValue],
+        }
+      : answerValue,
+  };
+
   return dynamoDbService.update(
     { userId: { S: userId } },
     {
-      UpdateExpression: `set updatedAt = :updatedAt, answers = list_append(if_not_exists(answers, :emptyList), :answer)`,
-      ExpressionAttributeValues: {
-        ':updatedAt': { N: String(Date.now()) },
-        ':answer': {
-          L: [{ S: answerData.answer || FormValue.Never }],
-        },
-        ':emptyList': { L: [] },
-      },
+      UpdateExpression,
+      ExpressionAttributeValues,
     },
     { tableName: process.env.AWS_TABLE_INDIVIDUAL! },
   );
