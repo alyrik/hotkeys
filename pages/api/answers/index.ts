@@ -4,6 +4,7 @@ import { IIndividualAnswerDto } from '@/models/dto/IndividualAnswerDto';
 import { CookieKey } from '@/models/CookieKey';
 import dynamoDbService from '@/services/dynamoDbService';
 import { FormValue } from '@/models/FormValue';
+import { buildScreenNumberCookie } from '@/helpers/buildCookie';
 
 async function handleSaveIndividualAnswer(
   { answer, questionId }: IIndividualAnswerDto,
@@ -41,6 +42,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         await handleSaveIndividualAnswer(
           req.body,
           req.cookies[CookieKey.UserId],
+        );
+        res.setHeader(
+          'Set-Cookie',
+          buildScreenNumberCookie(
+            req.body.questionId + 1,
+            process.env.NODE_ENV === 'production',
+          ),
         );
         res.status(200).end();
       } catch (e) {
