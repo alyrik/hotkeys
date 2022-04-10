@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import { Button, Container, Loading, Row, Spacer } from '@nextui-org/react';
+import {
+  Button,
+  Container,
+  Loading,
+  Row,
+  Spacer,
+  Text,
+} from '@nextui-org/react';
 import { v4 as uuidv4 } from 'uuid';
 
 import styles from './SurveyPage.module.css';
@@ -14,11 +21,29 @@ import {
 } from '@/helpers/buildCookie';
 import { IMAGE_HOST, screenMapping } from '@/config/config';
 import { useSaveIndividualAnswer } from '@/mutations/hooks/useSaveIndividualAnswer';
+import { useGetIndividualResults } from '@/queries/hooks/useGetIndividualResults';
+import { AnalyticsData } from '@/models/AnalyticsData';
+import dynamic from 'next/dynamic';
 
 interface ISurveyPageProps {
   screenNumber: number;
   userId: string;
 }
+
+const DynamicAnalyticsComponent = dynamic(
+  () => import('../../components/Analytics/Analytics'),
+  { ssr: false },
+);
+
+const prepareAnalyticsData = (data: FormValue[]) => {
+  return data?.reduce<AnalyticsData>(
+    (result, item, index) => ({
+      ...result,
+      [String(index + 1)]: { [item]: 1 },
+    }),
+    {},
+  );
+};
 
 const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
   const [currentScreenNumber, setCurrentScreenNumber] = useState(screenNumber);
@@ -27,9 +52,15 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
   const screenData = screenMapping[currentScreenNumber];
   const screenEntries = Object.entries(screenMapping);
   const totalScreenCount = screenEntries.length;
-  const finalScreen = currentScreenNumber > totalScreenCount;
+  const isFinalScreen = currentScreenNumber > totalScreenCount;
 
+  const { isLoading: isIndividualResultsLoading, data } =
+    useGetIndividualResults({
+      enabled: isFinalScreen,
+    });
   const { mutate: saveIndividualAnswer, isLoading } = useSaveIndividualAnswer();
+
+  const preparedIndividualData = prepareAnalyticsData(data);
 
   // TODO: custom prepare analytics button
 
@@ -68,7 +99,7 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
       );
     }
 
-    if (!finalScreen) {
+    if (!isFinalScreen) {
       return (
         <>
           <Slide
@@ -91,6 +122,41 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
             {isLoading ? <Loading color="white" /> : 'Submit'}
           </Button>
         </>
+      );
+    }
+
+    if (isIndividualResultsLoading) {
+      return (
+        <Container
+          style={{ padding: 0, paddingTop: 20 }}
+          display="flex"
+          justify="center">
+          <Text
+            h2
+            size={24}
+            css={{
+              textGradient: '45deg, $blue500 -20%, $pink500 50%',
+            }}
+            weight="bold">
+            Preparing your results...
+          </Text>
+          <Spacer y={4} />
+          <Row justify="center">
+            <Loading color="primary" size="xl" />
+          </Row>
+        </Container>
+      );
+    }
+
+    if (preparedIndividualData) {
+      return (
+        <DynamicAnalyticsComponent
+          data={null}
+          individualData={preparedIndividualData}
+          topUsersData={null}
+          userPlace={null}
+          isIndiviualView={true}
+        />
       );
     }
   }

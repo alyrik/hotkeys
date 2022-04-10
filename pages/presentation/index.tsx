@@ -153,7 +153,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
   const screenData = screenMapping[screenNumber];
   const screenEntries = Object.entries(screenMapping);
   const totalScreenCount = screenEntries.length;
-  const finalScreen = screenNumber > totalScreenCount;
+  const isFinalScreen = screenNumber > totalScreenCount;
 
   // TODO: custom prepare analytics button
 
@@ -180,7 +180,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
       );
     }
 
-    if (!finalScreen) {
+    if (!isFinalScreen) {
       return (
         <Slide
           key={screenNumber}
@@ -248,7 +248,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
             <Button onClick={handleNextButtonClick}>⇨</Button>
             <Spacer x={2} />
             <Text>
-              {finalScreen
+              {isFinalScreen
                 ? 'Results'
                 : `${screenNumber} / ${screenEntries.length}`}
             </Text>

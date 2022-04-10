@@ -15,18 +15,19 @@ import { LabelLayout, UniversalTransition } from 'echarts/features';
 import { Collapse, Container, Spacer, Text } from '@nextui-org/react';
 import orderBy from 'lodash.orderby';
 import sortBy from 'lodash.sortby';
-
-import { AnalyticsData } from '../../models/AnalyticsData';
 import { EChartsOption } from 'echarts-for-react/src/types';
-import { FormValue } from '../../models/FormValue';
-import { IMAGE_HOST, screenMapping } from '../../config/config';
 import Zoom from 'react-medium-image-zoom';
 
+import { AnalyticsData } from '@/models/AnalyticsData';
+import { FormValue } from '@/models/FormValue';
+import { IMAGE_HOST, screenMapping } from '@/config/config';
+
 interface IAnalyticsProps {
-  data: AnalyticsData;
+  data: AnalyticsData | null;
   individualData: AnalyticsData | null;
   topUsersData: AnalyticsData[] | null;
   userPlace: number | null;
+  isIndiviualView?: boolean;
 }
 
 interface ITotalValues {
@@ -86,9 +87,9 @@ const prepareTotalValues = (data: AnalyticsData | null) => {
 
   return Object.entries(data).reduce(
     (result, [key, value]) => {
-      result[FormValue.Always] += value[FormValue.Always];
-      result[FormValue.Sometimes] += value[FormValue.Sometimes];
-      result[FormValue.Never] += value[FormValue.Never];
+      result[FormValue.Always] += value[FormValue.Always] ?? 0;
+      result[FormValue.Sometimes] += value[FormValue.Sometimes] ?? 0;
+      result[FormValue.Never] += value[FormValue.Never] ?? 0;
 
       return result;
     },
@@ -185,7 +186,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
     totalIndividualSum,
   );
 
-  let preparedDetailedData = Object.entries(data).reduce<
+  let preparedDetailedData = Object.entries(data ?? {}).reduce<
     {
       name: string;
       values: { [key: string]: { raw: number; id: number } };
@@ -383,54 +384,58 @@ const Analytics: React.FC<IAnalyticsProps> = ({
           <Spacer y={2} />
         </Container>
       )}
-      <Text
-        h2
-        size={40}
-        css={{
-          textGradient: '45deg, $blue500 -20%, $pink500 50%',
-        }}
-        weight="bold">
-        Total results
-      </Text>
-      <Spacer y={2} />
-      <ReactEChartsCore
-        echarts={echarts}
-        option={totalOptions}
-        notMerge={true}
-        lazyUpdate={true}
-        theme="dark"
-        style={{ height: '600px' }}
-        opts={{
-          width: 800,
-          height: 600,
-        }}
-      />
-      <Spacer y={3} />
-      <ReactEChartsCore
-        echarts={echarts}
-        option={detailedOption}
-        notMerge={true}
-        lazyUpdate={true}
-        theme="dark"
-        style={{ height: '1200px' }}
-        opts={{
-          width: 800,
-          height: 1200,
-        }}
-        onEvents={{
-          click(event: any) {
-            const params =
-              'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1278,height=646,left=0,top=0';
-            const screenData = screenMapping[event.data.name];
+      {data && (
+        <>
+          <Text
+            h2
+            size={40}
+            css={{
+              textGradient: '45deg, $blue500 -20%, $pink500 50%',
+            }}
+            weight="bold">
+            Total results
+          </Text>
+          <Spacer y={2} />
+          <ReactEChartsCore
+            echarts={echarts}
+            option={totalOptions}
+            notMerge={true}
+            lazyUpdate={true}
+            theme="dark"
+            style={{ height: '600px' }}
+            opts={{
+              width: 800,
+              height: 600,
+            }}
+          />
+          <Spacer y={3} />
+          <ReactEChartsCore
+            echarts={echarts}
+            option={detailedOption}
+            notMerge={true}
+            lazyUpdate={true}
+            theme="dark"
+            style={{ height: '1200px' }}
+            opts={{
+              width: 800,
+              height: 1200,
+            }}
+            onEvents={{
+              click(event: any) {
+                const params =
+                  'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1278,height=646,left=0,top=0';
+                const screenData = screenMapping[event.data.name];
 
-            open(
-              `${IMAGE_HOST}${screenData.imageSrc}`,
-              screenData.title,
-              params,
-            );
-          },
-        }}
-      />
+                open(
+                  `${IMAGE_HOST}${screenData.imageSrc}`,
+                  screenData.title,
+                  params,
+                );
+              },
+            }}
+          />
+        </>
+      )}
       {individualData && (
         <>
           <Spacer y={5} />

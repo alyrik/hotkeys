@@ -6,6 +6,15 @@ import dynamoDbService from '@/services/dynamoDbService';
 import { FormValue } from '@/models/FormValue';
 import { buildScreenNumberCookie } from '@/helpers/buildCookie';
 
+async function handleGetIndividualResults(userId: string) {
+  const data = await dynamoDbService.findOne(
+    { userId: { S: userId } },
+    { tableName: process.env.AWS_TABLE_INDIVIDUAL! },
+  );
+
+  return data.answers;
+}
+
 async function handleSaveIndividualAnswer(
   { answer, questionId }: IIndividualAnswerDto,
   userId: string,
@@ -51,6 +60,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           ),
         );
         res.status(200).end();
+      } catch (e) {
+        console.error(e);
+        res.status(500).end();
+      }
+      break;
+    case 'GET':
+      try {
+        const data = await handleGetIndividualResults(
+          req.cookies[CookieKey.UserId],
+        );
+        res.status(200).json(data);
       } catch (e) {
         console.error(e);
         res.status(500).end();
