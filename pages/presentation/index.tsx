@@ -156,7 +156,6 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
   const isFinalScreen = screenNumber > totalScreenCount;
 
   // TODO: custom prepare analytics button
-
   function renderResult() {
     if (screenNumber === 0) {
       return (
