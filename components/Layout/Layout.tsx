@@ -3,9 +3,11 @@ import React from 'react';
 import styles from './Layout.module.scss';
 import { Container, Link, Row, Text } from '@nextui-org/react';
 
-interface ILayoutProps {}
+interface ILayoutProps {
+  children: JSX.Element;
+}
 
-const Layout: React.FC<ILayoutProps> = ({ children }) => {
+const Layout = ({ children }: ILayoutProps): JSX.Element => {
   return (
     <div className={styles.root}>
       <main className={styles.content}>{children}</main>
