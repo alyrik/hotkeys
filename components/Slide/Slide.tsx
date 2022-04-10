@@ -7,6 +7,7 @@ import { FormValue } from '../../models/FormValue';
 
 interface ISlideProps {
   id: number;
+  slideNumber: string;
   title: string;
   imageSrc: string;
   subTitle?: string;
@@ -18,7 +19,7 @@ interface ISlideProps {
 }
 
 const Slide: FC<ISlideProps> = ({
-  id,
+  slideNumber,
   title,
   subTitle,
   imageSrc,
@@ -46,7 +47,9 @@ const Slide: FC<ISlideProps> = ({
               weight="bold"
               small={false}
               css={{ letterSpacing: '$normal' }}>
-              {id}. {title}
+              {slideNumber}
+              <br />
+              {title}
             </Text>
             <Text size={14} css={{ letterSpacing: '$normal' }}>
               {subTitle}

@@ -185,6 +185,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
         <Slide
           key={screenNumber}
           id={screenNumber}
+          slideNumber={`${screenNumber} / ${screenEntries.length}`}
           title={screenData.title}
           subTitle={screenData.subTitle}
           imageSrc={`${IMAGE_HOST}${screenData.imageSrc}`}

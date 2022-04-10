@@ -78,12 +78,33 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
         onSuccess() {
           setFormValue('');
           setCurrentScreenNumber(currentScreenNumber + 1);
+          window.scrollTo({ top: 100, behavior: 'smooth' });
         },
         onError(e) {
           // TODO: render error
         },
       },
     );
+  }
+
+  // TODO: save cookie?
+  function handlePreviousButtonClick() {
+    const confirm = window.confirm('Are you sure to go to the previous slide?');
+
+    if (!confirm) return;
+
+    const nextCount = Number(currentScreenNumber) - 1;
+    setCurrentScreenNumber(nextCount);
+  }
+
+  // TODO: save cookie?
+  function handleResetButtonClick() {
+    const confirm = window.confirm('Are you sure to start from the beginning?');
+
+    if (!confirm) return;
+
+    const nextCount = 1;
+    setCurrentScreenNumber(nextCount);
   }
 
   function renderResult() {
@@ -102,9 +123,45 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
     if (!isFinalScreen) {
       return (
         <>
+          {currentScreenNumber > 0 && (
+            <>
+              <Row justify="space-between">
+                <Button
+                  onClick={handlePreviousButtonClick}
+                  light={true}
+                  color="primary"
+                  size="lg"
+                  disabled={currentScreenNumber < 2}
+                  css={{
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    minWidth: 0,
+                    textTransform: 'none',
+                  }}>
+                  ⇦ Previous slide
+                </Button>
+                <Button
+                  onClick={handleResetButtonClick}
+                  light={true}
+                  size="lg"
+                  disabled={currentScreenNumber < 2}
+                  color="primary"
+                  css={{
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    minWidth: 0,
+                    textTransform: 'normal',
+                  }}>
+                  ⟳ Restart
+                </Button>
+              </Row>
+              <Spacer y={2} />
+            </>
+          )}
           <Slide
             key={currentScreenNumber}
             id={currentScreenNumber}
+            slideNumber={`${currentScreenNumber} / ${screenEntries.length}`}
             title={screenData.title}
             subTitle={screenData.subTitle}
             imageSrc={`${IMAGE_HOST}${screenData.imageSrc}`}
@@ -117,8 +174,7 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
             color="primary"
             size="xl"
             disabled={!formValue}
-            onClick={handleSubmitButtonClick}
-            clickable={!isLoading}>
+            onClick={handleSubmitButtonClick}>
             {isLoading ? <Loading color="white" /> : 'Submit'}
           </Button>
         </>
