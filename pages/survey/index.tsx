@@ -255,22 +255,25 @@ export const getServerSideProps: GetServerSideProps<ISurveyPageProps> = async ({
   const initialScreenNumber = Number(req.cookies[CookieKey.ScreenNumber]); // TODO: use expirable user cookie to define screen
   const userId = initialUserId ?? uuidv4();
   const screenNumber = initialScreenNumber || 0;
+  const cookiesToSet = [];
 
   if (!initialUserId) {
-    res.setHeader(
-      'Set-Cookie',
+    cookiesToSet.push(
       buildUserIdCookie(userId, process.env.NODE_ENV === 'production'),
     );
   }
 
   if (isNaN(initialScreenNumber) || initialScreenNumber === 0) {
-    res.setHeader(
-      'Set-Cookie',
+    cookiesToSet.push(
       buildScreenNumberCookie(
         screenNumber,
         process.env.NODE_ENV === 'production',
       ),
     );
+  }
+
+  if (cookiesToSet.length) {
+    res.setHeader('Set-Cookie', cookiesToSet);
   }
 
   return {
