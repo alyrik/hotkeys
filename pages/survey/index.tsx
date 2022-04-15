@@ -10,11 +10,11 @@ import {
   Text,
 } from '@nextui-org/react';
 import { v4 as uuidv4 } from 'uuid';
+import Cookies from 'js-cookie';
 
 import styles from './SurveyPage.module.css';
 import Slide from '@/components/Slide/Slide';
 import { FormValue } from '@/models/FormValue';
-import { CookieKey } from '@/models/CookieKey';
 import {
   buildScreenNumberCookie,
   buildUserIdCookie,
@@ -24,6 +24,7 @@ import { useSaveIndividualAnswer } from '@/mutations/hooks/useSaveIndividualAnsw
 import { useGetIndividualResults } from '@/queries/hooks/useGetIndividualResults';
 import { AnalyticsData } from '@/models/AnalyticsData';
 import dynamic from 'next/dynamic';
+import { CookieKey, cookieTtl } from '@/config/cookies';
 
 interface ISurveyPageProps {
   screenNumber: number;
@@ -64,6 +65,12 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
 
   // TODO: custom prepare analytics button
 
+  function saveScreenNumberCookie(nextScreenNumber: number) {
+    Cookies.set(CookieKey.ScreenNumber, String(nextScreenNumber), {
+      expires: cookieTtl[CookieKey.ScreenNumber],
+    });
+  }
+
   function handleStartButtonClick() {
     setCurrentScreenNumber(1);
   }
@@ -93,18 +100,19 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
 
     if (!confirm) return;
 
-    const nextCount = Number(currentScreenNumber) - 1;
-    setCurrentScreenNumber(nextCount);
+    const nextScreenNumber = Number(currentScreenNumber) - 1;
+    saveScreenNumberCookie(nextScreenNumber);
+    setCurrentScreenNumber(nextScreenNumber);
   }
 
-  // TODO: save cookie?
   function handleResetButtonClick() {
     const confirm = window.confirm('Are you sure to start from the beginning?');
 
     if (!confirm) return;
 
-    const nextCount = 1;
-    setCurrentScreenNumber(nextCount);
+    const nextScreenNumber = 1;
+    saveScreenNumberCookie(nextScreenNumber);
+    setCurrentScreenNumber(nextScreenNumber);
   }
 
   function renderResult() {
@@ -252,7 +260,7 @@ export const getServerSideProps: GetServerSideProps<ISurveyPageProps> = async ({
   res,
 }) => {
   const initialUserId = req.cookies[CookieKey.UserId];
-  const initialScreenNumber = Number(req.cookies[CookieKey.ScreenNumber]); // TODO: use expirable user cookie to define screen
+  const initialScreenNumber = Number(req.cookies[CookieKey.ScreenNumber]);
   const userId = initialUserId ?? uuidv4();
   const screenNumber = initialScreenNumber || 0;
   const cookiesToSet = [];

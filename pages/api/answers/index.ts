@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { IIndividualAnswerDto } from '@/models/dto/IndividualAnswerDto';
-import { CookieKey } from '@/models/CookieKey';
 import dynamoDbService from '@/services/dynamoDbService';
 import { FormValue } from '@/models/FormValue';
 import { buildScreenNumberCookie } from '@/helpers/buildCookie';
+import { CookieKey } from '@/config/cookies';
 
 async function handleGetIndividualResults(userId: string) {
   const data = await dynamoDbService.findOne(

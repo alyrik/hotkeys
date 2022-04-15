@@ -3,7 +3,7 @@ import type { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { Button, Container, Row } from '@nextui-org/react';
 
-import { CookieKey } from '../models/CookieKey';
+import { CookieKey } from '@/config/cookies';
 
 interface IIndexPageProps {
   isAdmin: boolean;

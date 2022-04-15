@@ -6,10 +6,10 @@ import { GetQueueAttributesResult } from '@aws-sdk/client-sqs';
 import { SocketEvent } from '@/models/SocketEvent';
 import localDataService from '@/services/localDataService';
 import { SocketEventData } from '@/models/SocketEventData';
-import { CookieKey } from '@/models/CookieKey';
 import sqsService from '@/services/sqsService';
 import dynamoDbService from '@/services/dynamoDbService';
 import analyticsService, { IInputData } from '@/services/analyticsService';
+import { CookieKey } from '@/config/cookies';
 
 function isEmptyQueue(attributes: GetQueueAttributesResult['Attributes']) {
   return (

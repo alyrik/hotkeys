@@ -1,14 +1,16 @@
 import { serialize } from 'cookie';
-import { CookieKey } from '@/models/CookieKey';
+
+import { CookieKey, cookieTtl } from '@/config/cookies';
 
 export function buildCookie(
   key: CookieKey,
   value: string,
   isProd: boolean,
   maxAge: number,
+  httpOnly = false,
 ) {
   return serialize(key, value, {
-    httpOnly: true,
+    httpOnly,
     secure: isProd,
     sameSite: isProd,
     path: '/',
@@ -21,7 +23,8 @@ export function buildUserIdCookie(userId: string, isProd: boolean): string {
     CookieKey.UserId,
     userId,
     isProd,
-    60 * 60 * 24 * 30 * 12 * 5,
+    cookieTtl[CookieKey.UserId],
+    true,
   );
 }
 
@@ -33,6 +36,6 @@ export function buildScreenNumberCookie(
     CookieKey.ScreenNumber,
     String(screenNumber),
     isProd,
-    60 * 60 * 24 * 5,
+    cookieTtl[CookieKey.ScreenNumber],
   );
 }

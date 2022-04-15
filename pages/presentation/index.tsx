@@ -18,12 +18,12 @@ import { SocketEvent } from '../../models/SocketEvent';
 import localDataService from '../../services/localDataService';
 import Slide from '../../components/Slide/Slide';
 import { FormValue } from '../../models/FormValue';
-import { CookieKey } from '../../models/CookieKey';
 import { buildUserIdCookie } from '../../helpers/buildCookie';
 import { IMAGE_HOST, screenMapping } from '../../config/config';
 import { AnalyticsData } from '../../models/AnalyticsData';
 import { SocketEventData } from '../../models/SocketEventData';
 import analyticsService from '../../services/analyticsService';
+import { CookieKey } from '@/config/cookies';
 
 interface IPresentationPageProps {
   initialScreen: number;
