@@ -213,6 +213,7 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
     }
 
     if (preparedIndividualData) {
+      // TODO: restart button
       return (
         <DynamicAnalyticsComponent
           data={null}
@@ -224,8 +225,6 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
       );
     }
   }
-
-  // TODO: Restart button
 
   return (
     <div className={styles.container}>
@@ -262,7 +261,7 @@ export const getServerSideProps: GetServerSideProps<ISurveyPageProps> = async ({
   const initialUserId = req.cookies[CookieKey.UserId];
   const initialScreenNumber = Number(req.cookies[CookieKey.ScreenNumber]);
   const userId = initialUserId ?? uuidv4();
-  const screenNumber = initialScreenNumber || 0;
+  const screenNumber = initialScreenNumber || 1;
   const cookiesToSet = [];
 
   if (!initialUserId) {
@@ -271,7 +270,7 @@ export const getServerSideProps: GetServerSideProps<ISurveyPageProps> = async ({
     );
   }
 
-  if (isNaN(initialScreenNumber) || initialScreenNumber === 0) {
+  if (isNaN(initialScreenNumber) || initialScreenNumber <= 1) {
     cookiesToSet.push(
       buildScreenNumberCookie(
         screenNumber,

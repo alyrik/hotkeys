@@ -225,11 +225,6 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
   return (
     <div className={styles.container}>
       <Head>
-        <title>Very hot keys</title>
-        {/*TODO*/}
-        <meta name="description" content="Must-use hotkeys for every programmer" />
-        {/*TODO*/}
-        <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href={IMAGE_HOST} />
         {screenEntries
           .slice(screenNumber, screenNumber + 3)

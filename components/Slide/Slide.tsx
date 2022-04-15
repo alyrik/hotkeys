@@ -1,9 +1,17 @@
 import React, { FC } from 'react';
-import { Card, Text, Col, Radio, Spacer } from '@nextui-org/react';
+import {
+  Card,
+  Text,
+  Col,
+  Radio,
+  Spacer,
+  Loading,
+  Row,
+} from '@nextui-org/react';
 import Zoom from 'react-medium-image-zoom';
 
 import styles from './Slide.module.scss';
-import { FormValue } from '../../models/FormValue';
+import { FormValue } from '@/models/FormValue';
 
 interface ISlideProps {
   id: number;
@@ -57,6 +65,12 @@ const Slide: FC<ISlideProps> = ({
           </Col>
         </Card.Header>
         <Card.Body css={{ p: 0 }}>
+          <Row
+            justify="center"
+            align="center"
+            css={{ position: 'absolute', height: '100%' }}>
+            <Loading color="white" size="md" />
+          </Row>
           <Zoom
             overlayBgColorStart="rgba(0, 0, 0, 0)"
             overlayBgColorEnd="rgba(0, 0, 0, 0.75)"

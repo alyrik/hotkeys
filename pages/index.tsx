@@ -8,9 +8,14 @@ import { CookieKey } from '@/config/cookies';
 interface IIndexPageProps {
   isAdmin: boolean;
   userId: string;
+  screenNumber: number;
 }
 
-const IndexPage: NextPage<IIndexPageProps> = ({ isAdmin, userId }) => {
+const IndexPage: NextPage<IIndexPageProps> = ({
+  isAdmin,
+  userId,
+  screenNumber,
+}) => {
   const router = useRouter();
 
   function handleStartButtonClick() {
@@ -31,7 +36,7 @@ const IndexPage: NextPage<IIndexPageProps> = ({ isAdmin, userId }) => {
         css={{ flex: '1' }}>
         <Row justify="center" align="center">
           <Button color="gradient" size="xl" onClick={handleStartButtonClick}>
-            Take survey!
+            {screenNumber > 1 ? 'Continue your survey!' : 'Take survey!'}
           </Button>
         </Row>
       </Container>
@@ -43,12 +48,14 @@ export const getServerSideProps: GetServerSideProps<IIndexPageProps> = async ({
   req,
 }) => {
   const userId = req.cookies[CookieKey.UserId] ?? null;
+  const screenNumber = Number(req.cookies[CookieKey.ScreenNumber]) ?? null;
   const isAdmin = userId === process.env.ADMIN_TOKEN;
 
   return {
     props: {
       isAdmin,
       userId,
+      screenNumber,
     },
   };
 };

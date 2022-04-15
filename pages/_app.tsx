@@ -11,26 +11,24 @@ import Layout from '../components/Layout/Layout';
 const screenEntries = Object.entries(screenMapping);
 const queryClient = new QueryClient();
 
+// TODO: google analytics
+// TODO: bugsnag
+// TODO: OG
+// TODO: favicons
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <NextUIProvider theme={createTheme({ type: 'dark' })}>
       <QueryClientProvider client={queryClient}>
         <Head>
           <title>Very hot keys</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta
             name="description"
-            content="Must-use hotkeys for every programmer"
+            content="Must-use hotkeys for every developer"
           />
           <link rel="icon" href="/favicon.ico" />
           <link rel="preconnect" href={IMAGE_HOST} />
-          {screenEntries.slice(0, 3).map(([key, value]) => (
-            <link
-              key={key}
-              rel="prefetch"
-              href={IMAGE_HOST + value.imageSrc}
-              as="image"
-            />
-          ))}
         </Head>
         <CssBaseline />
         <NextNProgress
