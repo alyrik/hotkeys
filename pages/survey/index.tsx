@@ -115,6 +115,46 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
     setCurrentScreenNumber(nextScreenNumber);
   }
 
+  function renderFlowControls(withBackButton?: boolean) {
+    return (
+      <>
+        <Row justify={withBackButton ? 'space-between' : 'flex-end'}>
+          {withBackButton && (
+            <Button
+              onClick={handlePreviousButtonClick}
+              light={true}
+              color="primary"
+              size="lg"
+              disabled={currentScreenNumber < 2}
+              css={{
+                paddingLeft: 0,
+                paddingRight: 0,
+                minWidth: 0,
+                textTransform: 'none',
+              }}>
+              ⇦ Previous slide
+            </Button>
+          )}
+          <Button
+            onClick={handleResetButtonClick}
+            light={true}
+            size="lg"
+            disabled={currentScreenNumber < 2}
+            color="primary"
+            css={{
+              paddingLeft: 0,
+              paddingRight: 0,
+              minWidth: 0,
+              textTransform: 'normal',
+            }}>
+            ⟳ Restart
+          </Button>
+        </Row>
+        <Spacer y={2} />
+      </>
+    );
+  }
+
   function renderResult() {
     if (currentScreenNumber === 0) {
       return (
@@ -131,41 +171,7 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
     if (!isFinalScreen) {
       return (
         <>
-          {currentScreenNumber > 0 && (
-            <>
-              <Row justify="space-between">
-                <Button
-                  onClick={handlePreviousButtonClick}
-                  light={true}
-                  color="primary"
-                  size="lg"
-                  disabled={currentScreenNumber < 2}
-                  css={{
-                    paddingLeft: 0,
-                    paddingRight: 0,
-                    minWidth: 0,
-                    textTransform: 'none',
-                  }}>
-                  ⇦ Previous slide
-                </Button>
-                <Button
-                  onClick={handleResetButtonClick}
-                  light={true}
-                  size="lg"
-                  disabled={currentScreenNumber < 2}
-                  color="primary"
-                  css={{
-                    paddingLeft: 0,
-                    paddingRight: 0,
-                    minWidth: 0,
-                    textTransform: 'normal',
-                  }}>
-                  ⟳ Restart
-                </Button>
-              </Row>
-              <Spacer y={2} />
-            </>
-          )}
+          {currentScreenNumber > 0 && renderFlowControls(true)}
           <Slide
             key={currentScreenNumber}
             id={currentScreenNumber}
@@ -178,6 +184,7 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
             onFormChange={(value: FormValue) => setFormValue(value)}
           />
           <Spacer y={2} />
+          {/*TODO: prevent clicking!!!*/}
           <Button
             color="primary"
             size="xl"
@@ -215,13 +222,16 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
     if (preparedIndividualData) {
       // TODO: restart button
       return (
-        <DynamicAnalyticsComponent
-          data={null}
-          individualData={preparedIndividualData}
-          topUsersData={null}
-          userPlace={null}
-          isIndiviualView={true}
-        />
+        <>
+          {renderFlowControls()}
+          <DynamicAnalyticsComponent
+            data={null}
+            individualData={preparedIndividualData}
+            topUsersData={null}
+            userPlace={null}
+            isIndiviualView={true}
+          />
+        </>
       );
     }
   }
