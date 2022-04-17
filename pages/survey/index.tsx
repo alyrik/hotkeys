@@ -252,7 +252,10 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Test your hotkeys skills</title>
+        <title>
+          Test your skills: how often do you use this functionality via
+          keyboard?
+        </title>
         {screenEntries
           .slice(currentScreenNumber, currentScreenNumber + 3)
           .map(([key, value]) => (
