@@ -12,6 +12,7 @@ const queryClient = new QueryClient();
 
 // TODO: Change gradient colors to more orange
 // TODO: google analytics
+// TODO: RECAPTCHA
 // TODO: bugsnag
 
 function MyApp({ Component, pageProps }: AppProps) {
