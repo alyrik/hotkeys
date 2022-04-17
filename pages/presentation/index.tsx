@@ -14,15 +14,15 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 
 import styles from './PresentationPage.module.css';
-import { SocketEvent } from '../../models/SocketEvent';
-import localDataService from '../../services/localDataService';
-import Slide from '../../components/Slide/Slide';
-import { FormValue } from '../../models/FormValue';
-import { buildUserIdCookie } from '../../helpers/buildCookie';
-import { IMAGE_HOST, screenMapping } from '../../config/config';
-import { AnalyticsData } from '../../models/AnalyticsData';
-import { SocketEventData } from '../../models/SocketEventData';
-import analyticsService from '../../services/analyticsService';
+import { SocketEvent } from '@/models/SocketEvent';
+import localDataService from '@/services/localDataService';
+import Slide from '@/components/Slide/Slide';
+import { FormValue } from '@/models/FormValue';
+import { buildUserIdCookie } from '@/helpers/buildCookie';
+import { IMAGE_HOST, screenMapping } from '@/config/config';
+import { AnalyticsData } from '@/models/AnalyticsData';
+import { SocketEventData } from '@/models/SocketEventData';
+import analyticsService from '@/services/analyticsService';
 import { CookieKey } from '@/config/cookies';
 
 interface IPresentationPageProps {
@@ -225,7 +225,6 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
   return (
     <div className={styles.container}>
       <Head>
-        <link rel="preconnect" href={IMAGE_HOST} />
         {screenEntries
           .slice(screenNumber, screenNumber + 3)
           .map(([key, value]) => (

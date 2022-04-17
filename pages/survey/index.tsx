@@ -193,7 +193,6 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
             onFormChange={(value: FormValue) => setFormValue(value)}
           />
           <Spacer y={2} />
-          {/*TODO: prevent clicking!!!*/}
           <Button
             color="primary"
             size="xl"
@@ -229,7 +228,6 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
     }
 
     if (preparedIndividualData) {
-      // TODO: restart button
       return (
         <>
           {renderFlowControls()}
@@ -247,15 +245,7 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Very hot keys</title>
-        {/*TODO*/}
-        <meta
-          name="description"
-          content="Must-use hotkeys for every programmer: assess your productivity!"
-        />
-        {/*TODO*/}
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="preconnect" href={IMAGE_HOST} />
+        <title>Test your hotkeys skills</title>
         {screenEntries
           .slice(currentScreenNumber, currentScreenNumber + 3)
           .map(([key, value]) => (
