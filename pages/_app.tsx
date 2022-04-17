@@ -10,22 +10,37 @@ import Layout from '../components/Layout/Layout';
 
 const queryClient = new QueryClient();
 
-// Change gradient colors to more orange
+// TODO: Change gradient colors to more orange
 // TODO: google analytics
 // TODO: bugsnag
-// TODO: OG
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const title = 'Very hot keys! Test your skills';
+
   return (
     <NextUIProvider theme={createTheme({ type: 'dark' })}>
       <QueryClientProvider client={queryClient}>
         <Head>
-          <title>Very hot keys! Test your hotkeys skills</title>
+          <title>{title}</title>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta
             name="description"
             content="Must-use hotkeys for every developer"
           />
+          <meta
+            name="keywords"
+            content="hotkeys, keyboard shortcuts, IDE, productivity, WebStorm, VSCode, code editor, survey"
+          />
+          <meta property="og:site_name" content="hotkeys.guru" />
+          <meta property="og:locale" content="en_US" />
+          <meta property="og:title" content={title} />
+          <meta
+            property="og:description"
+            content="Must-use hotkeys for every developer"
+          />
+          <meta property="og:type" content="website" />
+          <meta name="twitter:title" content={title} />
+          <meta name="twitter:card" content="summary_large_image" />
           <link rel="icon" href="/favicon.ico" />
           <link
             rel="apple-touch-icon"
