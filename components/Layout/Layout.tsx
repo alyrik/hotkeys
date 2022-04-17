@@ -14,7 +14,7 @@ const Layout = ({ children }: ILayoutProps): JSX.Element => {
       <header className={styles.header}>
         <Link href="/">
           <a className={styles.headerLink}>
-            <span>🔥</span>🔑
+            <span>🔥</span>🔑🔑
           </a>
         </Link>
       </header>

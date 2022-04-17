@@ -27,7 +27,6 @@ interface IAnalyticsProps {
   individualData: AnalyticsData | null;
   topUsersData: AnalyticsData[] | null;
   userPlace: number | null;
-  isIndiviualView?: boolean;
 }
 
 interface ITotalValues {
@@ -434,11 +433,11 @@ const Analytics: React.FC<IAnalyticsProps> = ({
               },
             }}
           />
+          <Spacer y={5} />
         </>
       )}
       {individualData && (
         <>
-          <Spacer y={5} />
           <Text
             h2
             size={40}
@@ -493,7 +492,6 @@ const Analytics: React.FC<IAnalyticsProps> = ({
       )}
       {topUsersData && (
         <>
-          <Spacer y={5} />
           <Text
             h2
             size={40}
@@ -536,6 +534,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
               </div>
             );
           })}
+          <Spacer y={5} />
         </>
       )}
     </div>

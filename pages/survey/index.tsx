@@ -37,7 +37,9 @@ const DynamicAnalyticsComponent = dynamic(
 );
 
 const prepareAnalyticsData = (data: FormValue[]) => {
-  return data?.reduce<AnalyticsData>(
+  if (!data) return;
+
+  return data.reduce<AnalyticsData>(
     (result, item, index) => ({
       ...result,
       [String(index + 1)]: { [item]: 1 },
@@ -55,15 +57,20 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
   const totalScreenCount = screenEntries.length;
   const isFinalScreen = currentScreenNumber > totalScreenCount;
 
-  const { isLoading: isIndividualResultsLoading, data } =
-    useGetIndividualResults({
-      enabled: isFinalScreen,
-    });
+  const {
+    isLoading: isIndividualResultsLoading,
+    isSuccess: isIndividualResultsSuccess,
+    data,
+  } = useGetIndividualResults({
+    enabled: isFinalScreen,
+  });
   const { mutate: saveIndividualAnswer, isLoading } = useSaveIndividualAnswer();
 
   const preparedIndividualData = prepareAnalyticsData(data);
 
-  // TODO: custom prepare analytics button
+  if (isFinalScreen && isIndividualResultsSuccess && !preparedIndividualData) {
+    saveScreenNumberCookie(1);
+  }
 
   function saveScreenNumberCookie(nextScreenNumber: number) {
     Cookies.set(CookieKey.ScreenNumber, String(nextScreenNumber), {
@@ -76,6 +83,8 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
   }
 
   function handleSubmitButtonClick() {
+    if (isLoading) return;
+
     saveIndividualAnswer(
       {
         questionId: currentScreenNumber,
@@ -229,7 +238,6 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
             individualData={preparedIndividualData}
             topUsersData={null}
             userPlace={null}
-            isIndiviualView={true}
           />
         </>
       );

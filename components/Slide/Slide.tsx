@@ -64,7 +64,7 @@ const Slide: FC<ISlideProps> = ({
             </Text>
           </Col>
         </Card.Header>
-        <Card.Body css={{ p: 0 }}>
+        <Card.Body css={{ p: 0, overflow: 'hidden' }}>
           <Row
             justify="center"
             align="center"
