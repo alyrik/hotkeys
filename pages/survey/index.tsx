@@ -11,6 +11,7 @@ import {
 } from '@nextui-org/react';
 import { v4 as uuidv4 } from 'uuid';
 import Cookies from 'js-cookie';
+import Bugsnag from '@bugsnag/js';
 
 import styles from './SurveyPage.module.css';
 import Slide from '@/components/Slide/Slide';
@@ -117,8 +118,9 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
           setCurrentScreenNumber(currentScreenNumber + 1);
           window.scrollTo({ top: 100, behavior: 'smooth' });
         },
-        onError(e) {
+        onError(e: any) {
           // TODO: render error
+          Bugsnag.notify(e);
         },
       },
     );

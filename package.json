@@ -21,6 +21,8 @@
     "@aws-sdk/client-dynamodb": "^3.67.0",
     "@aws-sdk/client-sqs": "^3.67.0",
     "@aws-sdk/util-dynamodb": "^3.67.0",
+    "@bugsnag/js": "^7.16.2",
+    "@bugsnag/plugin-react": "^7.16.2",
     "@nextui-org/react": "^1.0.8-beta.5",
     "@types/lodash.orderby": "^4.6.6",
     "axios": "^0.26.1",
