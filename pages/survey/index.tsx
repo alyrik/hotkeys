@@ -33,7 +33,28 @@ interface ISurveyPageProps {
 
 const DynamicAnalyticsComponent = dynamic(
   () => import('../../components/Analytics/Analytics'),
-  { ssr: false },
+  { ssr: false, loading: () => <ResultsLoadingView /> },
+);
+
+const ResultsLoadingView = () => (
+  <Container
+    style={{ padding: 0, paddingTop: 20 }}
+    display="flex"
+    justify="center">
+    <Text
+      h2
+      size={24}
+      css={{
+        textGradient: '45deg, $blue500 -20%, $pink500 50%',
+      }}
+      weight="bold">
+      Preparing your results...
+    </Text>
+    <Spacer y={4} />
+    <Row justify="center">
+      <Loading color="primary" size="xl" />
+    </Row>
+  </Container>
 );
 
 const prepareAnalyticsData = (data: FormValue[]) => {
@@ -206,24 +227,10 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
 
     if (isIndividualResultsLoading) {
       return (
-        <Container
-          style={{ padding: 0, paddingTop: 20 }}
-          display="flex"
-          justify="center">
-          <Text
-            h2
-            size={24}
-            css={{
-              textGradient: '45deg, $blue500 -20%, $pink500 50%',
-            }}
-            weight="bold">
-            Preparing your results...
-          </Text>
-          <Spacer y={4} />
-          <Row justify="center">
-            <Loading color="primary" size="xl" />
-          </Row>
-        </Container>
+        <>
+          {renderFlowControls()}
+          <ResultsLoadingView />
+        </>
       );
     }
 

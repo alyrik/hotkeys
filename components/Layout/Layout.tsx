@@ -17,6 +17,15 @@ const Layout = ({ children }: ILayoutProps): JSX.Element => {
             <span>🔥</span>🔑🔑
           </a>
         </Link>
+        <UiLink
+          className={styles.headerSecondaryLink}
+          css={{ alignItems: 'center' }}
+          href="https://www.buymeacoffee.com/alyrik"
+          target="_blank"
+          rel="noopener noreferrer"
+          color="secondary">
+          Buy me a ☕️
+        </UiLink>
       </header>
       <main className={styles.content}>{children}</main>
       <Container css={{ padding: '15px 0' }} className={styles.footer}>

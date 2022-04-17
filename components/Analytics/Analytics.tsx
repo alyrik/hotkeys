@@ -21,6 +21,7 @@ import Zoom from 'react-medium-image-zoom';
 import { AnalyticsData } from '@/models/AnalyticsData';
 import { FormValue } from '@/models/FormValue';
 import { IMAGE_HOST, screenMapping } from '@/config/config';
+import { useClientDimensions } from '@/helpers/useClientDimensions';
 
 interface IAnalyticsProps {
   data: AnalyticsData | null;
@@ -134,12 +135,15 @@ const prepareOverallData = (totalValues: ITotalValues, totalSum: number) => [
 
 const prepareTotalOptions = (
   data: ReturnType<typeof prepareOverallData>,
+  { isMobile }: { isMobile?: boolean } = {},
 ): EChartsOption => ({
   textStyle: {
     fontSize: 16,
   },
   title: {
-    text: 'Overall usage of IDE functionality via hotkeys',
+    text: isMobile
+      ? 'Hotkeys usage'
+      : 'Overall usage of IDE functionality via hotkeys',
     left: 'center',
   },
   tooltip: {
@@ -148,6 +152,7 @@ const prepareTotalOptions = (
   legend: {
     orient: 'vertical',
     left: 'left',
+    show: !isMobile,
   },
   series: [
     {
@@ -173,6 +178,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
   userPlace,
 }) => {
   const [shownImages, setShownImages] = useState<string[]>([]);
+  const { isMobileWidth } = useClientDimensions();
 
   const totalValues = prepareTotalValues(data);
   const totalIndividualValues = prepareTotalValues(individualData);
@@ -254,9 +260,12 @@ const Analytics: React.FC<IAnalyticsProps> = ({
     (item) => item.status === FormValue.Sometimes,
   ]);
 
-  const totalOptions = prepareTotalOptions(preparedOverallData);
+  const totalOptions = prepareTotalOptions(preparedOverallData, {
+    isMobile: isMobileWidth,
+  });
   const totalIndividualOptions = prepareTotalOptions(
     preparedIndividualOverallData,
+    { isMobile: isMobileWidth },
   );
   const detailedOption: EChartsOption = {
     tooltip: {
@@ -265,7 +274,9 @@ const Analytics: React.FC<IAnalyticsProps> = ({
         type: 'shadow',
       },
     },
-    legend: {},
+    legend: {
+      show: !isMobileWidth,
+    },
     grid: {
       left: '3%',
       right: '4%',
@@ -447,27 +458,26 @@ const Analytics: React.FC<IAnalyticsProps> = ({
             weight="bold">
             Your results
           </Text>
-          <Spacer y={2} />
+          <Spacer y={isMobileWidth ? 1 : 2} />
           <ReactEChartsCore
             echarts={echarts}
             option={totalIndividualOptions}
             notMerge={true}
             lazyUpdate={true}
             theme="dark"
-            style={{ height: '600px' }}
-            opts={{
-              width: 800,
-              height: 600,
-            }}
+            style={{ height: isMobileWidth ? '400px' : '600px', width: '100%' }}
           />
-          <Spacer y={3} />
+          <Spacer y={isMobileWidth ? 1 : 3} />
           <Collapse.Group splitted={true} style={{ padding: 0 }}>
             {preparedIndividualDetailedData.map((item) => (
               <Collapse
                 key={item.name}
                 onChange={() => handleCollapseChange(item.name)}
                 title={
-                  <Text size={24} weight="bold" color={itemStyles[item.status]}>
+                  <Text
+                    size={isMobileWidth ? 18 : 24}
+                    weight="bold"
+                    color={itemStyles[item.status]}>
                     {itemSymbols[item.status]} {item.name}
                   </Text>
                 }>
@@ -475,7 +485,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
                   <Zoom
                     overlayBgColorStart="rgba(0, 0, 0, 0)"
                     overlayBgColorEnd="rgba(0, 0, 0, 0.75)"
-                    zoomMargin={50}>
+                    zoomMargin={isMobileWidth ? 0 : 50}>
                     <div>
                       <img
                         src={IMAGE_HOST + item.imageSrc}

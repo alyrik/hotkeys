@@ -10,6 +10,7 @@ import Layout from '../components/Layout/Layout';
 
 const queryClient = new QueryClient();
 
+// Change gradient colors to more orange
 // TODO: google analytics
 // TODO: bugsnag
 // TODO: OG
