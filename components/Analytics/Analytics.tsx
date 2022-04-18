@@ -22,6 +22,7 @@ import { AnalyticsData } from '@/models/AnalyticsData';
 import { FormValue } from '@/models/FormValue';
 import { IMAGE_HOST, screenMapping } from '@/config/config';
 import { useClientDimensions } from '@/helpers/useClientDimensions';
+import { themeStyles } from '@/config/theme';
 
 interface IAnalyticsProps {
   data: AnalyticsData | null;
@@ -367,7 +368,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
           <Text
             size={50}
             css={{
-              textGradient: '45deg, #f3ec78 -20%, #af4261 50%',
+              textGradient: themeStyles.textGradient,
               letterSpacing: '$normal',
             }}
             weight="bold">
@@ -376,7 +377,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
           <Text
             size={50}
             css={{
-              textGradient: '45deg, #f3ec78 -20%, #af4261 50%',
+              textGradient: themeStyles.textGradient,
               letterSpacing: '$normal',
             }}
             weight="bold">
@@ -385,7 +386,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
           <Text
             size={50}
             css={{
-              textGradient: '45deg, #f3ec78 -20%, #af4261 50%',
+              textGradient: themeStyles.textGradient,
               letterSpacing: '$normal',
             }}
             weight="bold">
@@ -400,7 +401,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
             h2
             size={40}
             css={{
-              textGradient: '45deg, $blue500 -20%, $pink500 50%',
+              textGradient: themeStyles.textGradient,
             }}
             weight="bold">
             Total results
@@ -453,7 +454,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
             h2
             size={40}
             css={{
-              textGradient: '45deg, $blue500 -20%, $pink500 50%',
+              textGradient: themeStyles.textGradient,
             }}
             weight="bold">
             Your results
@@ -506,7 +507,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
             h2
             size={40}
             css={{
-              textGradient: '45deg, $blue500 -20%, $pink500 50%',
+              textGradient: themeStyles.textGradient,
             }}
             weight="bold">
             Top results

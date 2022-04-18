@@ -26,6 +26,7 @@ import { useGetIndividualResults } from '@/queries/hooks/useGetIndividualResults
 import { AnalyticsData } from '@/models/AnalyticsData';
 import dynamic from 'next/dynamic';
 import { CookieKey, cookieTtl } from '@/config/cookies';
+import { themeStyles } from '@/config/theme';
 
 interface ISurveyPageProps {
   screenNumber: number;
@@ -46,7 +47,7 @@ const ResultsLoadingView = () => (
       h2
       size={24}
       css={{
-        textGradient: '45deg, $blue500 -20%, $pink500 50%',
+        textGradient: themeStyles.textGradient,
       }}
       weight="bold">
       Preparing your results...

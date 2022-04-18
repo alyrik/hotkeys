@@ -24,6 +24,7 @@ import { AnalyticsData } from '@/models/AnalyticsData';
 import { SocketEventData } from '@/models/SocketEventData';
 import analyticsService from '@/services/analyticsService';
 import { CookieKey } from '@/config/cookies';
+import { themeStyles } from '@/config/theme';
 
 interface IPresentationPageProps {
   initialScreen: number;
@@ -165,7 +166,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
               h1
               size={56}
               css={{
-                textGradient: '45deg, $blue300 -30%, $pink700 60%',
+                textGradient: themeStyles.textGradient,
                 letterSpacing: '$normal',
               }}
               weight="bold">

@@ -4,7 +4,7 @@ import Bugsnag from '@bugsnag/js';
 import BugsnagPluginReact from '@bugsnag/plugin-react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { createTheme, CssBaseline, NextUIProvider } from '@nextui-org/react';
+import { NextUIProvider } from '@nextui-org/react';
 import NextNProgress from 'nextjs-progressbar';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
@@ -12,6 +12,7 @@ import { IMAGE_HOST } from '@/config/config';
 
 import Layout from '@/components/Layout/Layout';
 import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
+import { theme } from '@/config/theme';
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const title = 'Very hot keys! Test your skills';
 
   return (
-    <NextUIProvider theme={createTheme({ type: 'dark' })}>
+    <NextUIProvider theme={theme}>
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
           <Head>
@@ -78,7 +79,6 @@ function MyApp({ Component, pageProps }: AppProps) {
             <link rel="manifest" href="/site.webmanifest" />
             <link rel="preconnect" href={IMAGE_HOST} />
           </Head>
-          <CssBaseline />
           <NextNProgress
             color="#ff5a22"
             startPosition={0.3}

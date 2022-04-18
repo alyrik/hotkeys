@@ -6,16 +6,10 @@ import { Button, Container, Row } from '@nextui-org/react';
 import { CookieKey } from '@/config/cookies';
 
 interface IIndexPageProps {
-  isAdmin: boolean;
-  userId: string;
   screenNumber: number;
 }
 
-const IndexPage: NextPage<IIndexPageProps> = ({
-  isAdmin,
-  userId,
-  screenNumber,
-}) => {
+const IndexPage: NextPage<IIndexPageProps> = ({ screenNumber }) => {
   const router = useRouter();
 
   function handleStartButtonClick() {
@@ -47,14 +41,10 @@ const IndexPage: NextPage<IIndexPageProps> = ({
 export const getServerSideProps: GetServerSideProps<IIndexPageProps> = async ({
   req,
 }) => {
-  const userId = req.cookies[CookieKey.UserId] ?? null;
   const screenNumber = Number(req.cookies[CookieKey.ScreenNumber]) ?? null;
-  const isAdmin = userId === process.env.ADMIN_TOKEN;
 
   return {
     props: {
-      isAdmin,
-      userId,
       screenNumber,
     },
   };

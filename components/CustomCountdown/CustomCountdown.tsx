@@ -3,6 +3,7 @@ import { Text } from '@nextui-org/react';
 
 import { pluralize } from '../../helpers/pluralize';
 import Countdown from 'react-countdown';
+import { themeStyles } from '@/config/theme';
 
 interface ICountdownProps {}
 
@@ -17,7 +18,7 @@ const CustomCountdown: React.FC<ICountdownProps> = () => {
             <Text
               size={80}
               css={{
-                textGradient: '45deg, $blue300 -30%, $pink700 60%',
+                textGradient: themeStyles.textGradient,
                 letterSpacing: '$normal',
               }}
               weight="bold">
@@ -48,7 +49,7 @@ const CustomCountdown: React.FC<ICountdownProps> = () => {
             <Text
               size={80}
               css={{
-                textGradient: '45deg, $blue300 -30%, $pink700 60%',
+                textGradient: themeStyles.textGradient,
                 letterSpacing: '$normal',
               }}
               weight="bold">
