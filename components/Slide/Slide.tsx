@@ -26,17 +26,20 @@ interface ISlideProps {
   shouldIndicateSuccess?: boolean;
 }
 
-const Slide: FC<ISlideProps> = ({
-  slideNumber,
-  title,
-  subTitle,
-  imageSrc,
-  formValue,
-  onFormChange,
-  isLoading,
-  isDisabled,
-  shouldIndicateSuccess,
-}) => {
+const Slide: FC<ISlideProps> = (
+  {
+    slideNumber,
+    title,
+    subTitle,
+    imageSrc,
+    formValue,
+    onFormChange,
+    isLoading,
+    isDisabled,
+    shouldIndicateSuccess,
+  },
+  p: number = 10,
+) => {
   return (
     <div
       className={[styles.root, isLoading ? styles.loading : undefined].join(
@@ -46,15 +49,20 @@ const Slide: FC<ISlideProps> = ({
         <Card.Header
           css={{
             transition: 'background 250ms ease',
+            p: '10px 15px',
             background: shouldIndicateSuccess && formValue ? '$success' : '',
+            '@sm': { p: '15px 20px' },
           }}>
           <Col>
             <Text
               h1={true}
-              size={24}
               weight="bold"
               small={false}
-              css={{ letterSpacing: '$normal' }}>
+              css={{
+                letterSpacing: '$normal',
+                fontSize: 18,
+                '@sm': { fontSize: 24 },
+              }}>
               {slideNumber}
               <br />
               {title}
@@ -85,22 +93,45 @@ const Slide: FC<ISlideProps> = ({
             </div>
           </Zoom>
         </Card.Body>
-        <Card.Footer>
+        <Card.Footer css={{ p: '10px 15px', '@sm': { p: '15px 20px' } }}>
           <Col>
-            <Spacer y={2} />
-            <Text size={20} b={true} css={{ letterSpacing: '$normal' }}>
+            <Spacer y={1} />
+            <Text
+              b={true}
+              css={{
+                letterSpacing: '$normal',
+                fontSize: 16,
+                '@sm': { fontSize: 20 },
+              }}>
               How often do you use this functionality (via keyboard)?
             </Text>
             <Radio.Group
               disabled={isDisabled}
               value={formValue}
               onChange={(value) => onFormChange(value as FormValue)}>
-              <Radio value={FormValue.Always}>
+              <Radio
+                value={FormValue.Always}
+                css={{
+                  '--nextui--radioSize': 'var(--nextui-space-8)',
+                  '@sm': { '--nextui--radioSize': 'var(--nextui-space-9)' },
+                }}>
                 Always
                 <Radio.Description>Or almost always</Radio.Description>
               </Radio>
-              <Radio value={FormValue.Sometimes}>Sometimes</Radio>
-              <Radio value={FormValue.Never}>
+              <Radio
+                value={FormValue.Sometimes}
+                css={{
+                  '--nextui--radioSize': 'var(--nextui-space-8)',
+                  '@sm': { '--nextui--radioSize': 'var(--nextui-space-9)' },
+                }}>
+                Sometimes
+              </Radio>
+              <Radio
+                value={FormValue.Never}
+                css={{
+                  '--nextui--radioSize': 'var(--nextui-space-8)',
+                  '@sm': { '--nextui--radioSize': 'var(--nextui-space-9)' },
+                }}>
                 Never<Radio.Desc>Or almost never</Radio.Desc>
               </Radio>
             </Radio.Group>

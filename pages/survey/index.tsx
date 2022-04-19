@@ -127,7 +127,6 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
     );
   }
 
-  // TODO: save cookie?
   function handlePreviousButtonClick() {
     const confirm = window.confirm('Are you sure to go to the previous slide?');
 
@@ -164,6 +163,10 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
                 paddingRight: 0,
                 minWidth: 0,
                 textTransform: 'none',
+                fontSize: 'var(--nextui-fontSizes-xs)',
+                '@sm': {
+                  fontSize: 'var(--nextui-fontSizes-base)',
+                },
               }}>
               ⇦ Previous slide
             </Button>
@@ -179,11 +182,15 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
               paddingRight: 0,
               minWidth: 0,
               textTransform: 'normal',
+              fontSize: 'var(--nextui-fontSizes-xs)',
+              '@sm': {
+                fontSize: 'var(--nextui-fontSizes-base)',
+              },
             }}>
-            ⟳ Restart
+            ↻ Restart
           </Button>
         </Row>
-        <Spacer y={2} />
+        <Spacer css={{ marginTop: 20, '@sm': { mt: 30 } }} />
       </>
     );
   }
@@ -221,6 +228,12 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
             color="primary"
             size="xl"
             disabled={!formValue}
+            css={{
+              width: '100%',
+              '@xs': {
+                width: 'auto',
+              },
+            }}
             onClick={handleSubmitButtonClick}>
             {isLoading ? <Loading color="white" /> : 'Submit'}
           </Button>

@@ -6,6 +6,8 @@ const breakpoints = {
 };
 
 function calcDimensions() {
+  if (typeof window === 'undefined') return {};
+
   const width = Math.max(
     document.documentElement.clientWidth,
     window.innerWidth || 0,
