@@ -59,7 +59,6 @@ const Slide: FC<ISlideProps> = (
               weight="bold"
               small={false}
               css={{
-                letterSpacing: '$normal',
                 fontSize: 18,
                 '@sm': { fontSize: 24 },
               }}>
@@ -67,9 +66,7 @@ const Slide: FC<ISlideProps> = (
               <br />
               {title}
             </Text>
-            <Text size={14} css={{ letterSpacing: '$normal' }}>
-              {subTitle}
-            </Text>
+            <Text size={14}>{subTitle}</Text>
           </Col>
         </Card.Header>
         <Card.Body css={{ p: 0, overflow: 'hidden' }}>
@@ -99,7 +96,6 @@ const Slide: FC<ISlideProps> = (
             <Text
               b={true}
               css={{
-                letterSpacing: '$normal',
                 fontSize: 16,
                 '@sm': { fontSize: 20 },
               }}>

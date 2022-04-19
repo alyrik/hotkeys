@@ -3,6 +3,7 @@ import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import {
   Button,
+  Card,
   Container,
   Loading,
   Row,
@@ -86,8 +87,15 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
     data,
   } = useGetIndividualResults({
     enabled: isFinalScreen,
+    onError(e: Error) {
+      Bugsnag.notify(e);
+    },
   });
-  const { mutate: saveIndividualAnswer, isLoading } = useSaveIndividualAnswer();
+  const {
+    mutate: saveIndividualAnswer,
+    isLoading,
+    isError,
+  } = useSaveIndividualAnswer();
 
   const preparedIndividualData = prepareAnalyticsData(data);
 
@@ -120,7 +128,6 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
           window.scrollTo({ top: 100, behavior: 'smooth' });
         },
         onError(e: any) {
-          // TODO: render error
           Bugsnag.notify(e);
         },
       },
@@ -223,7 +230,20 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
             isLoading={isLoading}
             onFormChange={(value: FormValue) => setFormValue(value)}
           />
-          <Spacer y={2} />
+          {isError ? (
+            <>
+              <Spacer y={1} />
+              <Card color="error">
+                <Text css={{ fontWeight: '$bold' }}>
+                  Sorry, we weren&apos;t able to save your answer. Please try
+                  again.
+                </Text>
+              </Card>
+              <Spacer y={1} />
+            </>
+          ) : (
+            <Spacer y={2} />
+          )}
           <Button
             color="primary"
             size="xl"

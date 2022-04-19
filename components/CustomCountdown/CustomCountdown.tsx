@@ -19,7 +19,6 @@ const CustomCountdown: React.FC<ICountdownProps> = () => {
               size={80}
               css={{
                 textGradient: themeStyles.textGradient,
-                letterSpacing: '$normal',
               }}
               weight="bold">
               a moment!
@@ -50,7 +49,6 @@ const CustomCountdown: React.FC<ICountdownProps> = () => {
               size={80}
               css={{
                 textGradient: themeStyles.textGradient,
-                letterSpacing: '$normal',
               }}
               weight="bold">
               {Boolean(days) && (

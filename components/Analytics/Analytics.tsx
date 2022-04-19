@@ -369,7 +369,6 @@ const Analytics: React.FC<IAnalyticsProps> = ({
             size={50}
             css={{
               textGradient: themeStyles.textGradient,
-              letterSpacing: '$normal',
             }}
             weight="bold">
             Congratulations!
@@ -378,7 +377,6 @@ const Analytics: React.FC<IAnalyticsProps> = ({
             size={50}
             css={{
               textGradient: themeStyles.textGradient,
-              letterSpacing: '$normal',
             }}
             weight="bold">
             You&apos;re in the {placeMap[userPlace]} place!
@@ -387,7 +385,6 @@ const Analytics: React.FC<IAnalyticsProps> = ({
             size={50}
             css={{
               textGradient: themeStyles.textGradient,
-              letterSpacing: '$normal',
             }}
             weight="bold">
             👍

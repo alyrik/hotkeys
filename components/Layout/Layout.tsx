@@ -30,7 +30,7 @@ const Layout = ({ children }: ILayoutProps): JSX.Element => {
       <main className={styles.content}>{children}</main>
       <Container css={{ padding: '15px 0' }} className={styles.footer}>
         <Row justify="center" align="center">
-          <Text size={14} css={{ letterSpacing: '$normal' }}>
+          <Text size={14}>
             © Created by{' '}
             <UiLink
               href="https://www.linkedin.com/in/kiryl-anokhin-462aab114/"
