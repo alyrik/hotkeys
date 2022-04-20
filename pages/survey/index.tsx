@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import {
@@ -76,6 +76,8 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
   const [currentScreenNumber, setCurrentScreenNumber] = useState(screenNumber);
   const [formValue, setFormValue] = useState('');
 
+  const slideRef = useRef<HTMLDivElement>(null);
+
   const screenData = screenMapping[currentScreenNumber];
   const screenEntries = Object.entries(screenMapping);
   const totalScreenCount = screenEntries.length;
@@ -125,7 +127,12 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
         onSuccess() {
           setFormValue('');
           setCurrentScreenNumber(currentScreenNumber + 1);
-          window.scrollTo({ top: 100, behavior: 'smooth' });
+
+          const offsetTop = slideRef.current?.offsetTop;
+          window.scrollTo({
+            top: offsetTop ? offsetTop - 20 : 0,
+            behavior: 'smooth',
+          });
         },
         onError(e: any) {
           Bugsnag.notify(e);
@@ -221,6 +228,7 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
           {currentScreenNumber > 0 && renderFlowControls(true)}
           <Slide
             key={currentScreenNumber}
+            ref={slideRef}
             id={currentScreenNumber}
             slideNumber={`${currentScreenNumber} / ${screenEntries.length}`}
             title={screenData.title}
