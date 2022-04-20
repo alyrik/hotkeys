@@ -24,7 +24,6 @@ if (typeof window !== 'undefined' && !Bugsnag._client) {
   });
 }
 
-// TODO: Change gradient colors to more orange
 // TODO: RECAPTCHA
 
 function MyApp({ Component, pageProps }: AppProps) {
