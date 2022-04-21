@@ -1,6 +1,6 @@
 import React, { ErrorInfo } from 'react';
 import Bugsnag from '@bugsnag/js';
-import { Button } from '@nextui-org/react';
+import { Button, Container, Row } from '@nextui-org/react';
 
 class ErrorBoundary extends React.Component<{ children: JSX.Element }> {
   state: { hasError: boolean };
@@ -22,15 +22,28 @@ class ErrorBoundary extends React.Component<{ children: JSX.Element }> {
   render() {
     if (this.state.hasError) {
       return (
-        <div>
-          <h2>Looks like there is an error 🙄. Try to reload the page.</h2>
-          <Button
-            color="primary"
-            size="xl"
-            onClick={() => window.location.reload()}>
-            Reload?
-          </Button>
-        </div>
+        <Container
+          direction="column"
+          display="flex"
+          style={{ minHeight: '100%' }}>
+          <Container
+            direction="column"
+            display="flex"
+            justify="center"
+            css={{ flex: '1', maxWidth: 800, p: 0 }}>
+            <Row>
+              <h2>Looks like there is an error 🙄. Try to reload the page.</h2>
+            </Row>
+            <Row>
+              <Button
+                color="primary"
+                size="xl"
+                onClick={() => window.location.reload()}>
+                Reload?
+              </Button>
+            </Row>
+          </Container>
+        </Container>
       );
     }
 

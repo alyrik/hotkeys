@@ -42,7 +42,7 @@ const IndexPage: NextPage<IIndexPageProps> = ({ screenNumber }) => {
       direction="column"
       display="flex"
       justify="space-between"
-      style={{ minHeight: '100%', paddingBottom: 100 }}>
+      style={{ minHeight: '100%', paddingTop: 40, paddingBottom: 100 }}>
       <Container
         direction="column"
         display="flex"

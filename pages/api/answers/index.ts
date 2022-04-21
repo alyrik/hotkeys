@@ -22,7 +22,7 @@ async function handleSaveIndividualAnswer(
   const isFirstQuestion = questionId === 1;
 
   const UpdateExpression = `set updatedAt = :updatedAt, answers${
-    isFirstQuestion ? '' : `[${questionId}]`
+    isFirstQuestion ? '' : `[${questionId - 1}]`
   } = ${isFirstQuestion ? ':firstAnswer' : ':answer'}`;
   const answerValue = { S: answer || FormValue.Never };
   const ExpressionAttributeValues = {
