@@ -104,8 +104,8 @@ const IndexPage: NextPage<IIndexPageProps> = ({ screenNumber }) => {
               enterDelay={200}
               content={
                 <Text size={16}>
-                  It doesn't matter which editor you use. All popular editors
-                  have functionality mentioned in the survey or at least
+                  It doesn&apos;t matter which editor you use. All popular
+                  editors have functionality mentioned in the survey or at least
                   something equal. We have used <strong>WebStorm</strong>{' '}
                   to prepare these examples.
                 </Text>
