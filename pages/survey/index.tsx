@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Cookies from 'js-cookie';
 import Bugsnag from '@bugsnag/js';
 
-import styles from './SurveyPage.module.css';
+import styles from './SurveyPage.module.scss';
 import Slide from '@/components/Slide/Slide';
 import { FormValue } from '@/models/FormValue';
 import {

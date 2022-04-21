@@ -1,0 +1,9 @@
+.tooltipWrapper {
+  display: inline;
+  text-decoration: var(--nextui-colors-purple400) dashed underline;
+}
+
+.tooltip {
+  min-width: 180px;
+  max-width: 300px;
+}

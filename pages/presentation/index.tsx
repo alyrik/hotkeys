@@ -13,7 +13,7 @@ import {
 } from '@nextui-org/react';
 import { v4 as uuidv4 } from 'uuid';
 
-import styles from './PresentationPage.module.css';
+import styles from './PresentationPage.module.scss';
 import { SocketEvent } from '@/models/SocketEvent';
 import localDataService from '@/services/localDataService';
 import Slide from '@/components/Slide/Slide';
