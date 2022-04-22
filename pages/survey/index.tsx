@@ -13,6 +13,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import Cookies from 'js-cookie';
 import Bugsnag from '@bugsnag/js';
+import { HiChevronDoubleLeft, HiRefresh } from 'react-icons/hi';
 
 import styles from './SurveyPage.module.scss';
 import Slide from '@/components/Slide/Slide';
@@ -182,7 +183,7 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
                   fontSize: 'var(--nextui-fontSizes-base)',
                 },
               }}>
-              ⇦ Previous slide
+              <HiChevronDoubleLeft size={20} /> Previous slide
             </Button>
           )}
           <Button
@@ -201,7 +202,7 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
                 fontSize: 'var(--nextui-fontSizes-base)',
               },
             }}>
-            ↻ Restart
+            <HiRefresh size={20} /> Restart
           </Button>
         </Row>
         <Spacer css={{ marginTop: 20, '@sm': { mt: 30 } }} />
