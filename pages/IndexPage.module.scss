@@ -1,6 +1,6 @@
 .tooltipWrapper {
   display: inline;
-  text-decoration: var(--nextui-colors-purple400) dashed underline;
+  border-bottom: 1px dashed var(--nextui-colors-purple400);
 }
 
 .tooltip {

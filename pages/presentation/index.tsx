@@ -125,7 +125,6 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
     });
   }, []);
 
-  // TODO: use custom Modal
   function handleNextButtonClick() {
     const confirm = window.confirm('Are you sure to go to the next slide?');
 
@@ -257,9 +256,6 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
     </div>
   );
 };
-
-// TODO: export individual results
-// TODO: share results
 
 export const getServerSideProps: GetServerSideProps<
   IPresentationPageProps
