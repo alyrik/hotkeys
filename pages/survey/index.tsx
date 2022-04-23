@@ -22,13 +22,14 @@ import {
   buildScreenNumberCookie,
   buildUserIdCookie,
 } from '@/helpers/buildCookie';
-import { IMAGE_HOST, screenMapping } from '@/config/config';
+import { IMAGE_HOST } from '@/config/config';
 import { useSaveIndividualAnswer } from '@/mutations/hooks/useSaveIndividualAnswer';
 import { useGetIndividualResults } from '@/queries/hooks/useGetIndividualResults';
 import { AnalyticsData } from '@/models/AnalyticsData';
 import dynamic from 'next/dynamic';
 import { CookieKey, cookieTtl } from '@/config/cookies';
 import { themeStyles } from '@/config/theme';
+import { screenMapping } from '@/config/screenMapping';
 
 interface ISurveyPageProps {
   screenNumber: number;
@@ -234,6 +235,7 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
             slideNumber={`${currentScreenNumber} / ${screenEntries.length}`}
             title={screenData.title}
             subTitle={screenData.subTitle}
+            description={screenData.description}
             imageSrc={`${IMAGE_HOST}${screenData.imageSrc}`}
             formValue={formValue}
             isLoading={isLoading}

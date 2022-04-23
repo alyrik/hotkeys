@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Text,
   Col,
+  Modal,
   Radio,
   Spacer,
   Loading,
   Row,
+  Button,
 } from '@nextui-org/react';
 import Zoom from 'react-medium-image-zoom';
+import { HiOutlineInformationCircle } from 'react-icons/hi';
 
 import styles from './Slide.module.scss';
 import { FormValue } from '@/models/FormValue';
@@ -19,6 +22,7 @@ interface ISlideProps {
   title: string;
   imageSrc: string;
   subTitle?: string;
+  description?: JSX.Element | string;
   formValue: FormValue | string;
   onFormChange(value: FormValue): void;
   isLoading?: boolean;
@@ -32,6 +36,7 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
       slideNumber,
       title,
       subTitle,
+      description,
       imageSrc,
       formValue,
       onFormChange,
@@ -41,12 +46,25 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
     },
     ref,
   ) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    function handleToggleModal() {
+      setIsModalOpen(!isModalOpen);
+    }
+
     return (
       <div
         ref={ref}
         className={[styles.root, isLoading ? styles.loading : undefined].join(
           ' ',
         )}>
+        <Modal
+          closeButton={true}
+          scroll={true}
+          open={isModalOpen}
+          onClose={handleToggleModal}>
+          <Modal.Body className={styles.modalBody}>{description}</Modal.Body>
+        </Modal>
         <Card>
           <Card.Header
             css={{
@@ -95,14 +113,27 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
           <Card.Footer css={{ p: '10px 15px', '@sm': { p: '15px 20px' } }}>
             <Col>
               <Spacer y={1} />
-              <Text
-                b={true}
-                css={{
-                  fontSize: 18,
-                  '@sm': { fontSize: 20 },
-                }}>
-                How often do you use this functionality (via keyboard)?
-              </Text>
+              <div className={styles.questionTitle}>
+                <Text
+                  b={true}
+                  css={{
+                    fontSize: 18,
+                    '@sm': { fontSize: 20 },
+                  }}>
+                  How often do you use this functionality via keyboard shortcut?
+                </Text>
+                {Boolean(description) && (
+                  <Button
+                    light={true}
+                    color="secondary"
+                    auto={true}
+                    ripple={false}
+                    onClick={handleToggleModal}
+                    css={{ width: 30, height: 30, p: 0, ml: 10 }}
+                    icon={<HiOutlineInformationCircle size={28} />}
+                  />
+                )}
+              </div>
               <Radio.Group
                 disabled={isDisabled}
                 value={formValue}

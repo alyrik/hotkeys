@@ -19,12 +19,13 @@ import localDataService from '@/services/localDataService';
 import Slide from '@/components/Slide/Slide';
 import { FormValue } from '@/models/FormValue';
 import { buildUserIdCookie } from '@/helpers/buildCookie';
-import { IMAGE_HOST, screenMapping } from '@/config/config';
+import { IMAGE_HOST} from '@/config/config';
 import { AnalyticsData } from '@/models/AnalyticsData';
 import { SocketEventData } from '@/models/SocketEventData';
 import analyticsService from '@/services/analyticsService';
 import { CookieKey } from '@/config/cookies';
 import { themeStyles } from '@/config/theme';
+import { screenMapping } from '@/config/screenMapping';
 
 interface IPresentationPageProps {
   initialScreen: number;

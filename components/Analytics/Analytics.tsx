@@ -20,9 +20,10 @@ import Zoom from 'react-medium-image-zoom';
 
 import { AnalyticsData } from '@/models/AnalyticsData';
 import { FormValue } from '@/models/FormValue';
-import { IMAGE_HOST, screenMapping } from '@/config/config';
+import { IMAGE_HOST} from '@/config/config';
 import { useClientDimensions } from '@/helpers/useClientDimensions';
 import { themeStyles } from '@/config/theme';
+import { screenMapping } from '@/config/screenMapping';
 
 interface IAnalyticsProps {
   data: AnalyticsData | null;
