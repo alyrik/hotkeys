@@ -120,7 +120,7 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
                     fontSize: 18,
                     '@sm': { fontSize: 20 },
                   }}>
-                  How often do you use this functionality via keyboard shortcut?
+                  Do you use this functionality via keyboard shortcut?
                 </Text>
                 {Boolean(description) && (
                   <Button
