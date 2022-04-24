@@ -33,7 +33,7 @@ const Layout = ({ children }: ILayoutProps): JSX.Element => {
           <Text size={14}>
             © Created by{' '}
             <UiLink
-              href="https://www.linkedin.com/in/kiryl-anokhin-462aab114/"
+              href="https://www.linkedin.com/in/kiryl-anokhin"
               target="_blank"
               rel="noopener noreferrer"
               color="secondary">

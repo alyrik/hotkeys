@@ -417,8 +417,7 @@ https://hotkeys.guru`;
     <div className={styles.container}>
       <Head>
         <title>
-          Test your skills: how often do you use this functionality via
-          keyboard?
+          Test your skills: do you use this functionality via keyboard shortcut?
         </title>
         {screenEntries
           .slice(currentScreenNumber, currentScreenNumber + 3)
