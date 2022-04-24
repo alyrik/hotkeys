@@ -24,10 +24,11 @@ if (typeof window !== 'undefined' && !Bugsnag._client) {
   });
 }
 
-// TODO: RECAPTCHA
-
 function MyApp({ Component, pageProps }: AppProps) {
   const title = 'Very hot keys! Test your skills';
+  const description =
+    'Must-use code editor keyboard shortcuts for every developer';
+  const image = `${IMAGE_HOST}social-image.png`;
 
   return (
     <NextUIProvider theme={theme}>
@@ -39,13 +40,10 @@ function MyApp({ Component, pageProps }: AppProps) {
               name="viewport"
               content="width=device-width, initial-scale=1"
             />
-            <meta
-              name="description"
-              content="Must-use hotkeys for every developer"
-            />
+            <meta name="description" content={description} />
             <meta
               name="keywords"
-              content="hotkeys, keyboard shortcuts, IDE, productivity, WebStorm, VSCode, code editor, survey"
+              content="hotkeys, keyboard shortcuts, IDE, productivity, WebStorm, VSCode, code editor, survey, software development"
             />
             <meta property="og:site_name" content="hotkeys.guru" />
             <meta property="og:locale" content="en_US" />
@@ -54,9 +52,12 @@ function MyApp({ Component, pageProps }: AppProps) {
               property="og:description"
               content="Must-use hotkeys for every developer"
             />
+            <meta property="og:image" content={image} />
             <meta property="og:type" content="website" />
             <meta name="twitter:title" content={title} />
+            <meta name="twitter:description" content={description} />
             <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:image" content={image} />
             <link rel="icon" href="/favicon.ico" />
             <link
               rel="apple-touch-icon"
