@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
 import {
   Card,
   Text,
@@ -10,11 +11,11 @@ import {
   Row,
   Button,
 } from '@nextui-org/react';
-import Zoom from 'react-medium-image-zoom';
 import { HiOutlineInformationCircle } from 'react-icons/hi';
 
 import styles from './Slide.module.scss';
 import { FormValue } from '@/models/FormValue';
+import { useClientDimensions } from '@/helpers/useClientDimensions';
 
 interface ISlideProps {
   id: number;
@@ -29,6 +30,15 @@ interface ISlideProps {
   isDisabled?: boolean;
   shouldIndicateSuccess?: boolean;
 }
+
+const DynamicZoom = dynamic(() => import('react-medium-image-zoom'), {
+  ssr: false,
+  loading: () => <div style={{ paddingBottom: '50.63%' }} />,
+});
+const DynamicInnerImageZoom = dynamic(() => import('react-inner-image-zoom'), {
+  ssr: false,
+  loading: () => <div style={{ paddingBottom: '50.63%' }} />,
+});
 
 const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
   (
@@ -47,9 +57,41 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
     ref,
   ) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { isMobileWidth } = useClientDimensions();
 
     function handleToggleModal() {
       setIsModalOpen(!isModalOpen);
+    }
+
+    function renderImage() {
+      return (
+        <div style={{ paddingBottom: '50.63%' }}>
+          <img
+            src={imageSrc}
+            alt={title}
+            width="100%"
+            style={{ position: 'absolute' }}
+          />
+        </div>
+      );
+    }
+
+    function renderImageContainer() {
+      return isMobileWidth ? (
+        <DynamicInnerImageZoom
+          src={imageSrc}
+          zoomScale={0.6}
+          imgAttributes={{ alt: title }}
+          hasSpacer={true}
+        />
+      ) : (
+        <DynamicZoom
+          overlayBgColorStart="rgba(0, 0, 0, 0)"
+          overlayBgColorEnd="rgba(0, 0, 0, 0.75)"
+          zoomMargin={20}>
+          {renderImage()}
+        </DynamicZoom>
+      );
     }
 
     return (
@@ -96,19 +138,7 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
               css={{ position: 'absolute', height: '100%' }}>
               <Loading color="white" size="md" />
             </Row>
-            <Zoom
-              overlayBgColorStart="rgba(0, 0, 0, 0)"
-              overlayBgColorEnd="rgba(0, 0, 0, 0.75)"
-              zoomMargin={20}>
-              <div style={{ paddingBottom: '50.63%' }}>
-                <img
-                  src={imageSrc}
-                  alt={title}
-                  width="100%"
-                  style={{ position: 'absolute' }}
-                />
-              </div>
-            </Zoom>
+            {renderImageContainer()}
           </Card.Body>
           <Card.Footer css={{ p: '10px 15px', '@sm': { p: '15px 20px' } }}>
             <Col>
