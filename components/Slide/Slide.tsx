@@ -25,7 +25,9 @@ interface ISlideProps {
   subTitle?: string;
   description?: JSX.Element | string;
   formValue: FormValue | string;
+
   onFormChange(value: FormValue): void;
+
   isLoading?: boolean;
   isDisabled?: boolean;
   shouldIndicateSuccess?: boolean;
@@ -64,33 +66,30 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
     }
 
     function renderImage() {
-      return (
-        <div style={{ paddingBottom: '50.63%' }}>
-          <img
-            src={imageSrc}
-            alt={title}
-            width="100%"
-            style={{ position: 'absolute' }}
-          />
-        </div>
-      );
+      return <img src={imageSrc} alt={title} width="100%" />;
     }
 
     function renderImageContainer() {
-      return isMobileWidth ? (
-        <DynamicInnerImageZoom
-          src={imageSrc}
-          zoomScale={0.6}
-          imgAttributes={{ alt: title }}
-          hasSpacer={true}
-        />
-      ) : (
-        <DynamicZoom
-          overlayBgColorStart="rgba(0, 0, 0, 0)"
-          overlayBgColorEnd="rgba(0, 0, 0, 0.75)"
-          zoomMargin={20}>
-          {renderImage()}
-        </DynamicZoom>
+      return (
+        <div style={{ paddingBottom: '50.63%' }}>
+          {isMobileWidth ? (
+            <DynamicInnerImageZoom
+              src={imageSrc}
+              zoomScale={0.5}
+              imgAttributes={{ alt: title }}
+              hasSpacer={true}
+              className={styles.imageFallback}
+            />
+          ) : (
+            <DynamicZoom
+              overlayBgColorStart="rgba(0, 0, 0, 0)"
+              overlayBgColorEnd="rgba(0, 0, 0, 0.75)"
+              wrapStyle={{ position: 'absolute' }}
+              zoomMargin={20}>
+              {renderImage()}
+            </DynamicZoom>
+          )}
+        </div>
       );
     }
 
@@ -150,7 +149,7 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
                     fontSize: 18,
                     '@sm': { fontSize: 20 },
                   }}>
-                  Do you use this functionality via keyboard shortcut?
+                  Do you use this functionality via keyboard shortcut?
                 </Text>
                 {Boolean(description) && (
                   <Button

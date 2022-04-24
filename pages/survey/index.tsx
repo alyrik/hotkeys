@@ -364,7 +364,7 @@ https://hotkeys.guru`;
               <Card color="error">
                 <Text css={{ fontWeight: '$bold' }}>
                   Sorry, we weren&apos;t able to save your answer. Please try
-                  again.
+                  again or restart the survey.
                 </Text>
               </Card>
               <Spacer y={1} />
