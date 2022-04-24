@@ -5,7 +5,9 @@ import {
   Button,
   Card,
   Container,
+  Grid,
   Loading,
+  Modal,
   Row,
   Spacer,
   Text,
@@ -31,6 +33,13 @@ interface ISurveyPageProps {
   screenNumber: number;
   userId: string;
 }
+
+type ConfirmModalType = 'previous' | 'restart';
+
+const confirmModalSubmitButtonTexts: Record<ConfirmModalType, string> = {
+  previous: 'Previous slide',
+  restart: 'Restart',
+};
 
 const DynamicAnalyticsComponent = dynamic(
   () => import('../../components/Analytics/Analytics'),
@@ -70,9 +79,11 @@ const prepareAnalyticsData = (data: FormValue[]) => {
   );
 };
 
-const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
+const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber }) => {
   const [currentScreenNumber, setCurrentScreenNumber] = useState(screenNumber);
   const [formValue, setFormValue] = useState('');
+  const [confirmModalType, setConfirmModalType] =
+    useState<ConfirmModalType | null>(null);
 
   const slideRef = useRef<HTMLDivElement>(null);
 
@@ -140,28 +151,69 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
   }
 
   function handlePreviousButtonClick() {
-    const confirm = window.confirm('Are you sure to go to the previous slide?');
-
-    if (!confirm) return;
-
     const nextScreenNumber = Number(currentScreenNumber) - 1;
     saveScreenNumberCookie(nextScreenNumber);
     setCurrentScreenNumber(nextScreenNumber);
   }
 
   function handleResetButtonClick() {
-    const confirm = window.confirm('Are you sure to start from the beginning?');
-
-    if (!confirm) return;
+    setConfirmModalType(null);
 
     const nextScreenNumber = 1;
     saveScreenNumberCookie(nextScreenNumber);
     setCurrentScreenNumber(nextScreenNumber);
   }
 
+  function handleCloseConfirmModal() {
+    setConfirmModalType(null);
+  }
+
   function renderFlowControls(withBackButton?: boolean) {
+    const confirmModalSubmitButtonCallbacks = {
+      previous: handlePreviousButtonClick,
+      restart: handleResetButtonClick,
+    };
+
     return (
       <>
+        <Modal
+          closeButton={true}
+          scroll={true}
+          open={Boolean(confirmModalType)}
+          onClose={handleCloseConfirmModal}>
+          <Modal.Body>
+            <Grid.Container>
+              <Row justify="center" align="center">
+                <Text b={true}>Are you sure?</Text>
+              </Row>
+              <Spacer y={1} />
+              <Grid.Container justify="space-between" alignContent="center">
+                <Grid>
+                  <Button
+                    size="sm"
+                    light={true}
+                    color="primary"
+                    onClick={handleCloseConfirmModal}>
+                    Cancel
+                  </Button>
+                </Grid>
+                <Grid>
+                  <Button
+                    size="sm"
+                    color="primary"
+                    onClick={
+                      confirmModalType
+                        ? confirmModalSubmitButtonCallbacks[confirmModalType]
+                        : undefined
+                    }>
+                    {confirmModalType &&
+                      confirmModalSubmitButtonTexts[confirmModalType]}
+                  </Button>
+                </Grid>
+              </Grid.Container>
+            </Grid.Container>
+          </Modal.Body>
+        </Modal>
         <Row justify={withBackButton ? 'space-between' : 'flex-end'}>
           {withBackButton && (
             <Button
@@ -184,11 +236,11 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber, userId }) => {
             </Button>
           )}
           <Button
-            onClick={handleResetButtonClick}
+            onClick={() => setConfirmModalType('restart')}
             light={true}
+            color="primary"
             size="lg"
             disabled={currentScreenNumber < 2}
-            color="primary"
             css={{
               paddingLeft: 0,
               paddingRight: 0,

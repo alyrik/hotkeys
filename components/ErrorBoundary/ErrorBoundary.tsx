@@ -30,7 +30,7 @@ class ErrorBoundary extends React.Component<{ children: JSX.Element }> {
             direction="column"
             display="flex"
             justify="center"
-            css={{ flex: '1', maxWidth: 800, p: 0 }}>
+            css={{ flex: '1', maxWidth: 800, p: '40px 20px' }}>
             <Row>
               <h2>Looks like there is an error 🙄. Try to reload the page.</h2>
             </Row>
