@@ -48,10 +48,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             <meta property="og:site_name" content="hotkeys.guru" />
             <meta property="og:locale" content="en_US" />
             <meta property="og:title" content={title} />
-            <meta
-              property="og:description"
-              content="Must-use hotkeys for every developer"
-            />
+            <meta property="og:description" content={description} />
             <meta property="og:image" content={image} />
             <meta property="og:type" content="website" />
             <meta name="twitter:title" content={title} />
