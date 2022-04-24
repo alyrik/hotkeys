@@ -10,7 +10,6 @@ import {
   Spacer,
   Text,
 } from '@nextui-org/react';
-import { v4 as uuidv4 } from 'uuid';
 import Cookies from 'js-cookie';
 import Bugsnag from '@bugsnag/js';
 import { HiChevronDoubleLeft, HiRefresh } from 'react-icons/hi';
@@ -18,10 +17,7 @@ import { HiChevronDoubleLeft, HiRefresh } from 'react-icons/hi';
 import styles from './SurveyPage.module.scss';
 import Slide from '@/components/Slide/Slide';
 import { FormValue } from '@/models/FormValue';
-import {
-  buildScreenNumberCookie,
-  buildUserIdCookie,
-} from '@/helpers/buildCookie';
+import { buildScreenNumberCookie } from '@/helpers/buildCookie';
 import { IMAGE_HOST } from '@/config/config';
 import { useSaveIndividualAnswer } from '@/mutations/hooks/useSaveIndividualAnswer';
 import { useGetIndividualResults } from '@/queries/hooks/useGetIndividualResults';
@@ -323,16 +319,18 @@ export const getServerSideProps: GetServerSideProps<ISurveyPageProps> = async ({
   req,
   res,
 }) => {
+  const cookiesToSet = [];
   const initialUserId = req.cookies[CookieKey.UserId];
   const initialScreenNumber = Number(req.cookies[CookieKey.ScreenNumber]);
-  const userId = initialUserId ?? uuidv4();
   const screenNumber = initialScreenNumber || 1;
-  const cookiesToSet = [];
 
   if (!initialUserId) {
-    cookiesToSet.push(
-      buildUserIdCookie(userId, process.env.NODE_ENV === 'production'),
-    );
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
   }
 
   if (isNaN(initialScreenNumber) || initialScreenNumber <= 1) {
@@ -351,7 +349,7 @@ export const getServerSideProps: GetServerSideProps<ISurveyPageProps> = async ({
   return {
     props: {
       screenNumber,
-      userId,
+      userId: initialUserId,
     },
   };
 };

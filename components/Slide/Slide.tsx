@@ -124,6 +124,7 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
                 </Text>
                 {Boolean(description) && (
                   <Button
+                    className={styles.infoButton}
                     light={true}
                     color="secondary"
                     auto={true}

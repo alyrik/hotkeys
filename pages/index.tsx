@@ -10,11 +10,13 @@ import {
   TextProps,
   Tooltip,
 } from '@nextui-org/react';
+import { v4 as uuidv4 } from 'uuid';
 
 import { CookieKey } from '@/config/cookies';
 import { themeStyles } from '@/config/theme';
 
 import styles from './IndexPage.module.scss';
+import { buildUserIdCookie } from '@/helpers/buildCookie';
 
 interface IIndexPageProps {
   screenNumber: number;
@@ -128,8 +130,22 @@ const IndexPage: NextPage<IIndexPageProps> = ({ screenNumber }) => {
 
 export const getServerSideProps: GetServerSideProps<IIndexPageProps> = async ({
   req,
+  res,
 }) => {
+  const cookiesToSet = [];
   const screenNumber = Number(req.cookies[CookieKey.ScreenNumber]) ?? null;
+  const initialUserId = req.cookies[CookieKey.UserId];
+  const userId = initialUserId ?? uuidv4();
+
+  if (!initialUserId) {
+    cookiesToSet.push(
+      buildUserIdCookie(userId, process.env.NODE_ENV === 'production'),
+    );
+  }
+
+  if (cookiesToSet.length) {
+    res.setHeader('Set-Cookie', cookiesToSet);
+  }
 
   return {
     props: {

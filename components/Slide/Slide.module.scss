@@ -10,12 +10,15 @@
 .questionTitle {
   display: flex;
   align-items: flex-start;
-  color: var(--nextui-colors-purple400);
-  cursor: pointer;
 }
 
 .modalBody {
   ul {
     list-style-type: disc;
   }
+}
+
+.infoButton {
+  color: var(--nextui-colors-purple400);
+  cursor: pointer;
 }
