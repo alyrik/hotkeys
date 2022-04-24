@@ -20,22 +20,22 @@ import Zoom from 'react-medium-image-zoom';
 
 import { AnalyticsData } from '@/models/AnalyticsData';
 import { FormValue } from '@/models/FormValue';
-import { IMAGE_HOST} from '@/config/config';
+import { IMAGE_HOST } from '@/config/config';
 import { useClientDimensions } from '@/helpers/useClientDimensions';
 import { themeStyles } from '@/config/theme';
 import { screenMapping } from '@/config/screenMapping';
+import {
+  ITotalValues,
+  prepareTotalSum,
+  prepareTotalValues,
+} from '@/helpers/analytics-converters';
+import { getPercent, formatPercent } from '@/helpers/formatters';
 
 interface IAnalyticsProps {
   data: AnalyticsData | null;
   individualData: AnalyticsData | null;
   topUsersData: AnalyticsData[] | null;
   userPlace: number | null;
-}
-
-interface ITotalValues {
-  [FormValue.Always]: number;
-  [FormValue.Sometimes]: number;
-  [FormValue.Never]: number;
 }
 
 const itemStyles = {
@@ -73,48 +73,13 @@ echarts.use([
   CanvasRenderer,
 ]);
 
-const getPercent = (count: number, total: number) =>
-  Math.round((count / total) * 100);
-
-const valueFormatter = (value: number) => `${value}%`;
-
-const generateTotalValuesTemplate = () => ({
-  [FormValue.Always]: 0,
-  [FormValue.Sometimes]: 0,
-  [FormValue.Never]: 0,
-});
-
-const prepareTotalValues = (data: AnalyticsData | null) => {
-  if (!data) return generateTotalValuesTemplate();
-
-  return Object.entries(data).reduce(
-    (result, [key, value]) => {
-      result[FormValue.Always] += value[FormValue.Always] ?? 0;
-      result[FormValue.Sometimes] += value[FormValue.Sometimes] ?? 0;
-      result[FormValue.Never] += value[FormValue.Never] ?? 0;
-
-      return result;
-    },
-    {
-      [FormValue.Always]: 0,
-      [FormValue.Sometimes]: 0,
-      [FormValue.Never]: 0,
-    },
-  );
-};
-
-const prepareTotalSum = (values: ITotalValues) =>
-  values[FormValue.Always] +
-  values[FormValue.Sometimes] +
-  values[FormValue.Never];
-
 const prepareOverallData = (totalValues: ITotalValues, totalSum: number) => [
   {
     value: getPercent(totalValues[FormValue.Always], totalSum),
     name: itemNames[FormValue.Always],
     itemStyle: { color: itemStyles[FormValue.Always] },
     tooltip: {
-      valueFormatter,
+      valueFormatter: formatPercent,
     },
   },
   {
@@ -122,7 +87,7 @@ const prepareOverallData = (totalValues: ITotalValues, totalSum: number) => [
     name: itemNames[FormValue.Sometimes],
     itemStyle: { color: itemStyles[FormValue.Sometimes] },
     tooltip: {
-      valueFormatter,
+      valueFormatter: formatPercent,
     },
   },
   {
@@ -130,7 +95,7 @@ const prepareOverallData = (totalValues: ITotalValues, totalSum: number) => [
     name: itemNames[FormValue.Never],
     itemStyle: { color: itemStyles[FormValue.Never] },
     tooltip: {
-      valueFormatter,
+      valueFormatter: formatPercent,
     },
   },
 ];
@@ -306,7 +271,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
         },
         itemStyle: { color: itemStyles[FormValue.Always] },
         tooltip: {
-          valueFormatter,
+          valueFormatter: formatPercent,
         },
         data: preparedDetailedData.map((item) => ({
           name: item.values[FormValue.Always].id,
@@ -326,7 +291,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
         },
         itemStyle: { color: itemStyles[FormValue.Sometimes] },
         tooltip: {
-          valueFormatter,
+          valueFormatter: formatPercent,
         },
         data: preparedDetailedData.map((item) => ({
           name: item.values[FormValue.Sometimes].id,
@@ -346,7 +311,7 @@ const Analytics: React.FC<IAnalyticsProps> = ({
         },
         itemStyle: { color: itemStyles[FormValue.Never] },
         tooltip: {
-          valueFormatter,
+          valueFormatter: formatPercent,
         },
         data: preparedDetailedData.map((item) => ({
           name: item.values[FormValue.Never].id,

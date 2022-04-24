@@ -28,6 +28,8 @@ import dynamic from 'next/dynamic';
 import { CookieKey, cookieTtl } from '@/config/cookies';
 import { themeStyles } from '@/config/theme';
 import { screenMapping } from '@/config/screenMapping';
+import { prepareTotalValues } from '@/helpers/analytics-converters';
+import { getPercentFormatted } from '@/helpers/formatters';
 
 interface ISurveyPageProps {
   screenNumber: number;
@@ -84,6 +86,9 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber }) => {
   const [formValue, setFormValue] = useState('');
   const [confirmModalType, setConfirmModalType] =
     useState<ConfirmModalType | null>(null);
+  const [isCopyToClipboardModalOpen, setIsCopyToClipboardModalOpen] =
+    useState(false);
+  const [resultMessage, setResultMessage] = useState('');
 
   const slideRef = useRef<HTMLDivElement>(null);
 
@@ -168,6 +173,33 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber }) => {
     setConfirmModalType(null);
   }
 
+  function handleCloseCopyToClipboardModal() {
+    setIsCopyToClipboardModalOpen(false);
+  }
+
+  async function handleShareClick() {
+    try {
+      const totalValues = prepareTotalValues(preparedIndividualData ?? null);
+      const totalNumber =
+        totalValues[FormValue.Never] +
+        totalValues[FormValue.Sometimes] +
+        totalValues[FormValue.Always];
+      const result = `My result is:
+✓ — ${getPercentFormatted(totalValues[FormValue.Always], totalNumber)}
+⚠ — ${getPercentFormatted(totalValues[FormValue.Sometimes], totalNumber)}
+✗ — ${getPercentFormatted(totalValues[FormValue.Never], totalNumber)}\n
+And what is yours?
+https://hotkeys.guru`;
+      setResultMessage(result);
+
+      await navigator.clipboard.writeText(result);
+      setIsCopyToClipboardModalOpen(true);
+    } catch (e: any) {
+      // TODO: try alternative way
+      Bugsnag.notify(e);
+    }
+  }
+
   function renderFlowControls(withBackButton?: boolean) {
     const confirmModalSubmitButtonCallbacks = {
       previous: handlePreviousButtonClick,
@@ -179,6 +211,29 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber }) => {
         <Modal
           closeButton={true}
           scroll={true}
+          open={isCopyToClipboardModalOpen}
+          onClose={handleCloseCopyToClipboardModal}>
+          <Modal.Body>
+            <Row css={{ mb: 5 }}>
+              <Text b={true}>Copied to clipboard! Just paste it anywhere.</Text>
+            </Row>
+            <Row>
+              <pre style={{ margin: 0 }}>{resultMessage}</pre>
+            </Row>
+            <Row>
+              <Button
+                size="lg"
+                color="primary"
+                css={{ width: '100%' }}
+                onClick={handleCloseCopyToClipboardModal}>
+                Got it!
+              </Button>
+            </Row>
+          </Modal.Body>
+        </Modal>
+        <Modal
+          closeButton={true}
+          scroll={true}
           open={Boolean(confirmModalType)}
           onClose={handleCloseConfirmModal}>
           <Modal.Body>
@@ -187,20 +242,24 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber }) => {
                 <Text b={true}>Are you sure?</Text>
               </Row>
               <Spacer y={1} />
-              <Grid.Container justify="space-between" alignContent="center">
-                <Grid>
+              <Grid.Container alignContent="center" gap={2}>
+                <Grid xs={6}>
                   <Button
-                    size="sm"
+                    size="lg"
+                    auto={true}
                     light={true}
                     color="primary"
+                    css={{ width: '100%' }}
                     onClick={handleCloseConfirmModal}>
                     Cancel
                   </Button>
                 </Grid>
-                <Grid>
+                <Grid xs={6}>
                   <Button
-                    size="sm"
+                    size="lg"
+                    auto={true}
                     color="primary"
+                    css={{ width: '100%' }}
                     onClick={
                       confirmModalType
                         ? confirmModalSubmitButtonCallbacks[confirmModalType]
@@ -214,8 +273,8 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber }) => {
             </Grid.Container>
           </Modal.Body>
         </Modal>
-        <Row justify={withBackButton ? 'space-between' : 'flex-end'}>
-          {withBackButton && (
+        <Row justify={'space-between'}>
+          {withBackButton ? (
             <Button
               onClick={handlePreviousButtonClick}
               light={true}
@@ -234,6 +293,16 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber }) => {
               }}>
               <HiChevronDoubleLeft size={20} /> Previous slide
             </Button>
+          ) : isIndividualResultsSuccess ? (
+            <Button
+              color="gradient"
+              size="lg"
+              auto={true}
+              onClick={handleShareClick}>
+              Share your result!
+            </Button>
+          ) : (
+            <span />
           )}
           <Button
             onClick={() => setConfirmModalType('restart')}

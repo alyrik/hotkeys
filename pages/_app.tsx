@@ -25,7 +25,7 @@ if (typeof window !== 'undefined' && !Bugsnag._client) {
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const title = 'Very hot keys! Test your skills';
+  const title = 'Hotkeys to success. Test your skills!';
   const description =
     'Must-use code editor keyboard shortcuts for every developer';
   const image = `${IMAGE_HOST}social-image.png`;
