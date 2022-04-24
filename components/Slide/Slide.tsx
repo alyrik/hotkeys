@@ -35,11 +35,9 @@ interface ISlideProps {
 
 const DynamicZoom = dynamic(() => import('react-medium-image-zoom'), {
   ssr: false,
-  loading: () => <div style={{ paddingBottom: '50.63%' }} />,
 });
 const DynamicInnerImageZoom = dynamic(() => import('react-inner-image-zoom'), {
   ssr: false,
-  loading: () => <div style={{ paddingBottom: '50.63%' }} />,
 });
 
 const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
