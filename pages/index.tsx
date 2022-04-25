@@ -79,7 +79,7 @@ const IndexPage: NextPage<IIndexPageProps> = ({ screenNumber }) => {
               enterDelay={200}
               content={
                 <Text size={16}>
-                  Code editor is a main tool of every developer. Master it
+                  A code editor is the main tool of every developer. Master it
                   perfectly to boost your productivity and get real pleasure
                   from coding!
                 </Text>
