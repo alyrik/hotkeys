@@ -185,9 +185,9 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber }) => {
         totalValues[FormValue.Sometimes] +
         totalValues[FormValue.Always];
       const result = `My result is:
-✓ — ${getPercentFormatted(totalValues[FormValue.Always], totalNumber)}
-⚠ — ${getPercentFormatted(totalValues[FormValue.Sometimes], totalNumber)}
-✗ — ${getPercentFormatted(totalValues[FormValue.Never], totalNumber)}\n
+✅ — ${getPercentFormatted(totalValues[FormValue.Always], totalNumber)}
+⚠️ — ${getPercentFormatted(totalValues[FormValue.Sometimes], totalNumber)}
+❌ — ${getPercentFormatted(totalValues[FormValue.Never], totalNumber)}\n
 And what is yours?
 https://hotkeys.guru`;
       setResultMessage(result);
