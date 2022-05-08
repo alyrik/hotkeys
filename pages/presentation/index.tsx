@@ -19,7 +19,7 @@ import localDataService from '@/services/localDataService';
 import Slide from '@/components/Slide/Slide';
 import { FormValue } from '@/models/FormValue';
 import { buildUserIdCookie } from '@/helpers/buildCookie';
-import { IMAGE_HOST} from '@/config/config';
+import { IMAGE_HOST } from '@/config/config';
 import { AnalyticsData } from '@/models/AnalyticsData';
 import { SocketEventData } from '@/models/SocketEventData';
 import analyticsService from '@/services/analyticsService';
@@ -189,6 +189,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
           slideNumber={`${screenNumber} / ${screenEntries.length}`}
           title={screenData.title}
           subTitle={screenData.subTitle}
+          description={screenData.description}
           imageSrc={`${IMAGE_HOST}${screenData.imageSrc}`}
           formValue={formValue}
           onFormChange={(value: FormValue) => setFormValue(value)}

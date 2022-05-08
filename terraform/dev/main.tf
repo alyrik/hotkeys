@@ -12,15 +12,10 @@ terraform {
 provider "aws" {
   profile = "default"
   region  = "eu-central-1"
-}
 
-resource "aws_dynamodb_table" "individual-table" {
-  name         = var.individual_table_name
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "userId"
-
-  attribute {
-    name = "userId"
-    type = "S"
+  default_tags {
+    tags = {
+      Project = var.project_tag_name
+    }
   }
 }
