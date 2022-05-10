@@ -10,6 +10,7 @@ export const theme = createTheme({
     colors: {
       gradient:
         'linear-gradient(112deg, #ff5a22 -25%, $purple600 0%, #e14313 90%)',
+      accents7: '$gray500',
     },
   },
 });
