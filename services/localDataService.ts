@@ -1,7 +1,7 @@
 import { dirname, join } from 'path';
 import { JSONFileSync, LowSync } from 'lowdb';
 import { fileURLToPath } from 'url';
-import { AnalyticsData } from '../models/AnalyticsData';
+import { AnalyticsData } from '@/models/AnalyticsData';
 import { IInputData } from './analyticsService';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
