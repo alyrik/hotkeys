@@ -120,7 +120,7 @@ const IndexPage: NextPage<IIndexPageProps> = ({ screenNumber }) => {
         <Spacer y={2} />
         <Row justify="center" align="center">
           <Button color="gradient" size="xl" onClick={handleStartButtonClick}>
-            {screenNumber > 1 ? 'Continue your survey!' : 'Take survey!'}
+            {screenNumber > 1 ? 'Continue your survey!' : 'Take the survey!'}
           </Button>
         </Row>
       </Container>
