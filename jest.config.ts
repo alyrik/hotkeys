@@ -1,6 +1,8 @@
 import nextJest from 'next/jest';
 import type { Config } from '@jest/types';
 
+const ignoredModules = ['uuid'].join('|');
+
 const createJestConfig = nextJest({
   dir: './',
 });
@@ -10,8 +12,8 @@ const customJestConfig: Config.InitialOptions = {
   moduleFileExtensions: [
     'ts',
     'tsx',
-    'json',
     'js',
+    'json',
     'mjs',
     'cjs',
     'jsx',
@@ -31,4 +33,15 @@ const customJestConfig: Config.InitialOptions = {
   },
 };
 
-export default createJestConfig(customJestConfig);
+const generateConfig = async () => {
+  const nextJestConfig = await createJestConfig(customJestConfig)();
+  return {
+    ...nextJestConfig,
+    transformIgnorePatterns: [
+      '^.+\\.module\\.(css|sass|scss)$',
+      `node_modules/(?!${ignoredModules})`,
+    ],
+  };
+};
+
+export default generateConfig;

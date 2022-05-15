@@ -18,7 +18,7 @@ import { themeStyles } from '@/config/theme';
 import styles from './IndexPage.module.scss';
 import { buildUserIdCookie } from '@/helpers/buildCookie';
 
-interface IIndexPageProps {
+export interface IIndexPageProps {
   screenNumber: number;
 }
 
@@ -119,7 +119,7 @@ const IndexPage: NextPage<IIndexPageProps> = ({ screenNumber }) => {
         </Row>
         <Spacer y={2} />
         <Row justify="center" align="center">
-          <Button color="gradient" size="xl" onClick={handleStartButtonClick}>
+          <Button color="gradient" size="xl" onPress={handleStartButtonClick}>
             {screenNumber > 1 ? 'Continue your survey!' : 'Take the survey!'}
           </Button>
         </Row>
@@ -133,9 +133,9 @@ export const getServerSideProps: GetServerSideProps<IIndexPageProps> = async ({
   res,
 }) => {
   const cookiesToSet = [];
-  const screenNumber = Number(req.cookies[CookieKey.ScreenNumber]) ?? null;
+  const screenNumber = Number(req.cookies[CookieKey.ScreenNumber]) || 0;
   const initialUserId = req.cookies[CookieKey.UserId];
-  const userId = initialUserId ?? uuidv4();
+  const userId = initialUserId || uuidv4();
 
   if (!initialUserId) {
     cookiesToSet.push(
