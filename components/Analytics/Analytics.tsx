@@ -25,7 +25,6 @@ import {
 import orderBy from 'lodash.orderby';
 import sortBy from 'lodash.sortby';
 import { EChartsOption } from 'echarts-for-react/src/types';
-import Zoom from 'react-medium-image-zoom';
 import { HiCheck } from 'react-icons/hi';
 import Bugsnag from '@bugsnag/js';
 

@@ -209,6 +209,8 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
           }
           topUsersData={isAdmin ? localIndividualAnalyticsData : null}
           userPlace={localUserPlace}
+          username=""
+          isDefaultUsername={false}
         />
       );
     }
@@ -262,7 +264,7 @@ const PresentationPage: NextPage<IPresentationPageProps> = ({
 export const getServerSideProps: GetServerSideProps<
   IPresentationPageProps
 > = async ({ req, res, query }) => {
-  const letMeInValue = query.letMeIn;
+  const letMeInValue = String(query.letMeIn);
   const initialUserId = req.cookies[CookieKey.UserId];
   const userId = initialUserId ?? letMeInValue ?? uuidv4();
   const isAdmin = userId === process.env.ADMIN_TOKEN;
