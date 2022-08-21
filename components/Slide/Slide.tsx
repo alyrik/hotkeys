@@ -69,7 +69,7 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
 
     function renderImageContainer() {
       return (
-        <div style={{ paddingBottom: '50.63%' }}>
+        <div style={{ position: isMobileWidth ? 'relative' : 'absolute' }}>
           {isMobileWidth ? (
             <DynamicInnerImageZoom
               src={imageSrc}
@@ -79,13 +79,7 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
               className={styles.imageFallback}
             />
           ) : (
-            <DynamicZoom
-              overlayBgColorStart="rgba(0, 0, 0, 0)"
-              overlayBgColorEnd="rgba(0, 0, 0, 0.75)"
-              wrapStyle={{ position: 'absolute' }}
-              zoomMargin={20}>
-              {renderImage()}
-            </DynamicZoom>
+            <DynamicZoom zoomMargin={20}>{renderImage()}</DynamicZoom>
           )}
         </div>
       );
@@ -128,7 +122,8 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
               <Text size={14}>{subTitle}</Text>
             </Col>
           </Card.Header>
-          <Card.Body css={{ p: 0, overflow: 'hidden' }}>
+          <Card.Body
+            css={{ p: 0, overflow: 'hidden', paddingBottom: '50.63%' }}>
             <Row
               justify="center"
               align="center"

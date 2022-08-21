@@ -49,6 +49,14 @@ import {
   setUsername,
 } from '@/components/Analytics/store/actions';
 import { useSaveUsername } from '@/mutations/hooks/useSaveUsername';
+import dynamic from 'next/dynamic';
+
+const DynamicZoom = dynamic(() => import('react-medium-image-zoom'), {
+  ssr: false,
+});
+const DynamicInnerImageZoom = dynamic(() => import('react-inner-image-zoom'), {
+  ssr: false,
+});
 
 interface IAnalyticsProps {
   data: AnalyticsData | null;
@@ -393,7 +401,9 @@ const Analytics: React.FC<IAnalyticsProps> = ({
     dispatch(setUsername(target.value));
   }
 
-  function handleNameSubmit() {
+  function handleNameFormSubmit(event: React.FormEvent) {
+    event.preventDefault();
+
     saveUsername(
       { username: usernameInputValue },
       {
@@ -494,10 +504,10 @@ const Analytics: React.FC<IAnalyticsProps> = ({
       )}
       {individualData && (
         <>
-          <Row align="flex-end" justify="flex-start">
+          <Row align="flex-end" justify="flex-start" wrap="wrap">
             <Text
               h2
-              size={40}
+              size={36}
               css={{
                 textGradient: themeStyles.textGradient,
                 flexShrink: 0,
@@ -506,39 +516,44 @@ const Analytics: React.FC<IAnalyticsProps> = ({
               weight="bold">
               Your results,{' '}
             </Text>
-            <Input
-              aria-label="Provide your username"
-              autoComplete="name"
-              name="username"
-              value={usernameInputValue}
-              fullWidth={true}
-              status="secondary"
-              size="xl"
-              contentRightStyling={false}
-              contentRight={
-                isUsernameInputButtonShown && (
-                  <Button
-                    auto={true}
-                    color="primary"
-                    icon={
-                      isSaveUsernameLoading ? (
-                        <Loading color="currentColor" size="sm" />
-                      ) : (
-                        <HiCheck size={30} />
-                      )
-                    }
-                    css={{ minWidth: 0 }}
-                    onPress={handleNameSubmit}
-                  />
-                )
-              }
-              onChange={handleUsernameInputChange}
-              style={{
-                fontSize: '40px',
-                fontWeight: 'bold',
-                paddingBottom: 8,
-              }}
-            />
+            <form
+              onSubmit={handleNameFormSubmit}
+              noValidate={true}
+              style={{ flex: 1, minWidth: 280 }}>
+              <Input
+                aria-label="Provide your username"
+                autoComplete="name"
+                name="username"
+                value={usernameInputValue}
+                fullWidth={true}
+                status="secondary"
+                size="xl"
+                contentRightStyling={false}
+                contentRight={
+                  isUsernameInputButtonShown && (
+                    <Button
+                      auto={true}
+                      color="primary"
+                      type="submit"
+                      icon={
+                        isSaveUsernameLoading ? (
+                          <Loading color="currentColor" size="sm" />
+                        ) : (
+                          <HiCheck size={30} />
+                        )
+                      }
+                      css={{ minWidth: 0 }}
+                    />
+                  )
+                }
+                onChange={handleUsernameInputChange}
+                style={{
+                  fontSize: '36px',
+                  fontWeight: 'bold',
+                  paddingBottom: 2,
+                }}
+              />
+            </form>
           </Row>
           <Spacer y={isMobileWidth ? 1 : 2} />
           <ReactEChartsCore
@@ -563,20 +578,25 @@ const Analytics: React.FC<IAnalyticsProps> = ({
                     {itemSymbols[item.status]} {item.name}
                   </Text>
                 }>
-                {shownImages.includes(item.name) && (
-                  <Zoom
-                    overlayBgColorStart="rgba(0, 0, 0, 0)"
-                    overlayBgColorEnd="rgba(0, 0, 0, 0.75)"
-                    zoomMargin={isMobileWidth ? 0 : 50}>
-                    <div>
-                      <img
-                        src={IMAGE_HOST + item.imageSrc}
-                        alt={item.name}
-                        width="100%"
-                      />
-                    </div>
-                  </Zoom>
-                )}
+                {shownImages.includes(item.name) &&
+                  (isMobileWidth ? (
+                    <DynamicInnerImageZoom
+                      src={IMAGE_HOST + item.imageSrc}
+                      zoomScale={0.5}
+                      imgAttributes={{ alt: item.name }}
+                      hasSpacer={true}
+                    />
+                  ) : (
+                    <DynamicZoom zoomMargin={50}>
+                      <div>
+                        <img
+                          src={IMAGE_HOST + item.imageSrc}
+                          alt={item.name}
+                          width="100%"
+                        />
+                      </div>
+                    </DynamicZoom>
+                  ))}
               </Collapse>
             ))}
           </Collapse.Group>
