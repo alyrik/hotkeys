@@ -16,9 +16,9 @@ import { theme } from '@/config/theme';
 
 const queryClient = new QueryClient();
 
-// @ts-ignore
 if (
   typeof window !== 'undefined' &&
+  // @ts-ignore
   !Bugsnag._client &&
   process.env.NODE_ENV === 'production'
 ) {
