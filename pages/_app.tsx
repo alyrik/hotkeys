@@ -17,7 +17,11 @@ import { theme } from '@/config/theme';
 const queryClient = new QueryClient();
 
 // @ts-ignore
-if (typeof window !== 'undefined' && !Bugsnag._client) {
+if (
+  typeof window !== 'undefined' &&
+  !Bugsnag._client &&
+  process.env.NODE_ENV === 'production'
+) {
   Bugsnag.start({
     apiKey: process.env.NEXT_PUBLIC_BUGSNAG_API_KEY as string,
     plugins: [new BugsnagPluginReact()],

@@ -162,18 +162,19 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
                   />
                 )}
               </div>
+              <Spacer y={0.5} />
               <Radio.Group
-                disabled={isDisabled}
+                isDisabled={isDisabled}
                 value={formValue}
                 onChange={(value) => onFormChange(value as FormValue)}>
                 <Radio
                   value={FormValue.Always}
+                  description="Or almost always"
                   css={{
                     '--nextui--radioSize': '18px',
                     '@sm': { '--nextui--radioSize': 'var(--nextui-space-9)' },
                   }}>
                   Always
-                  <Radio.Description>Or almost always</Radio.Description>
                 </Radio>
                 <Radio
                   value={FormValue.Sometimes}
@@ -185,11 +186,12 @@ const Slide = React.forwardRef<HTMLDivElement, ISlideProps>(
                 </Radio>
                 <Radio
                   value={FormValue.Never}
+                  description="Or almost never"
                   css={{
                     '--nextui--radioSize': '18px',
                     '@sm': { '--nextui--radioSize': 'var(--nextui-space-9)' },
                   }}>
-                  Never<Radio.Desc>Or almost never</Radio.Desc>
+                  Never
                 </Radio>
               </Radio.Group>
             </Col>

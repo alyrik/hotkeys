@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import * as echarts from 'echarts/core';
 import { BarChart, PieChart } from 'echarts/charts';
@@ -12,11 +12,22 @@ import {
   TransformComponent,
 } from 'echarts/components';
 import { LabelLayout, UniversalTransition } from 'echarts/features';
-import { Collapse, Container, Spacer, Text } from '@nextui-org/react';
+import {
+  Collapse,
+  Container,
+  Spacer,
+  Text,
+  Input,
+  Row,
+  Button,
+  Loading,
+} from '@nextui-org/react';
 import orderBy from 'lodash.orderby';
 import sortBy from 'lodash.sortby';
 import { EChartsOption } from 'echarts-for-react/src/types';
 import Zoom from 'react-medium-image-zoom';
+import { HiCheck } from 'react-icons/hi';
+import Bugsnag from '@bugsnag/js';
 
 import { AnalyticsData } from '@/models/AnalyticsData';
 import { FormValue } from '@/models/FormValue';
@@ -30,12 +41,22 @@ import {
   prepareTotalValues,
 } from '@/helpers/analytics-converters';
 import { getPercent, formatPercent } from '@/helpers/formatters';
+import { FormElement } from '@nextui-org/react/types/input/input-props';
+import { initialState, reducer } from '@/components/Analytics/store/reducer';
+import {
+  setInitialUsername,
+  setIsDefaultUsername,
+  setUsername,
+} from '@/components/Analytics/store/actions';
+import { useSaveUsername } from '@/mutations/hooks/useSaveUsername';
 
 interface IAnalyticsProps {
   data: AnalyticsData | null;
   individualData: AnalyticsData | null;
   topUsersData: AnalyticsData[] | null;
   userPlace: number | null;
+  username: string;
+  isDefaultUsername: boolean;
 }
 
 const itemStyles = {
@@ -143,9 +164,48 @@ const Analytics: React.FC<IAnalyticsProps> = ({
   individualData,
   topUsersData,
   userPlace,
+  username,
+  isDefaultUsername,
 }) => {
+  const [
+    {
+      initialUsername,
+      usernameInputValue,
+      isDefaultUsername: isDefaultUsernameLocal,
+    },
+    dispatch,
+  ] = useReducer(reducer, {
+    ...initialState,
+    initialUsername: username,
+    usernameInputValue: username,
+    isDefaultUsername,
+  });
   const [shownImages, setShownImages] = useState<string[]>([]);
+
   const { isMobileWidth } = useClientDimensions();
+  const {
+    mutate: saveUsername,
+    isLoading: isSaveUsernameLoading,
+    isError: isSaveUsernameError,
+  } = useSaveUsername();
+
+  useEffect(() => {
+    if (isDefaultUsernameLocal) {
+      saveUsername(
+        { username: usernameInputValue },
+        {
+          onSuccess() {
+            dispatch(setIsDefaultUsername(false));
+          },
+          onError(e: any) {
+            Bugsnag.notify(e);
+          },
+        },
+      );
+    }
+  }, []);
+
+  const isUsernameInputButtonShown = initialUsername !== usernameInputValue;
 
   const totalValues = prepareTotalValues(data);
   const totalIndividualValues = prepareTotalValues(individualData);
@@ -327,6 +387,27 @@ const Analytics: React.FC<IAnalyticsProps> = ({
     }
   }
 
+  function handleUsernameInputChange({
+    target,
+  }: React.ChangeEvent<FormElement>) {
+    dispatch(setUsername(target.value));
+  }
+
+  function handleNameSubmit() {
+    saveUsername(
+      { username: usernameInputValue },
+      {
+        onSuccess() {
+          dispatch(setInitialUsername(usernameInputValue));
+        },
+        onError(e: any) {
+          // show error
+          Bugsnag.notify(e);
+        },
+      },
+    );
+  }
+
   return (
     <div>
       {userPlace && (
@@ -413,15 +494,52 @@ const Analytics: React.FC<IAnalyticsProps> = ({
       )}
       {individualData && (
         <>
-          <Text
-            h2
-            size={40}
-            css={{
-              textGradient: themeStyles.textGradient,
-            }}
-            weight="bold">
-            Your results
-          </Text>
+          <Row align="flex-end" justify="flex-start">
+            <Text
+              h2
+              size={40}
+              css={{
+                textGradient: themeStyles.textGradient,
+                flexShrink: 0,
+                marginRight: 5,
+              }}
+              weight="bold">
+              Your results,{' '}
+            </Text>
+            <Input
+              aria-label="Provide your username"
+              autoComplete="name"
+              name="username"
+              value={usernameInputValue}
+              fullWidth={true}
+              status="secondary"
+              size="xl"
+              contentRightStyling={false}
+              contentRight={
+                isUsernameInputButtonShown && (
+                  <Button
+                    auto={true}
+                    color="primary"
+                    icon={
+                      isSaveUsernameLoading ? (
+                        <Loading color="currentColor" size="sm" />
+                      ) : (
+                        <HiCheck size={30} />
+                      )
+                    }
+                    css={{ minWidth: 0 }}
+                    onPress={handleNameSubmit}
+                  />
+                )
+              }
+              onChange={handleUsernameInputChange}
+              style={{
+                fontSize: '40px',
+                fontWeight: 'bold',
+                paddingBottom: 8,
+              }}
+            />
+          </Row>
           <Spacer y={isMobileWidth ? 1 : 2} />
           <ReactEChartsCore
             echarts={echarts}

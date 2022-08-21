@@ -13,5 +13,6 @@ export function useGetIndividualResults({
   return useQuery([QueryKey.GetIndividualResults], getIndividualResults, {
     enabled,
     onError,
+    staleTime: Infinity,
   });
 }

@@ -5,5 +5,5 @@ export enum CookieKey {
 
 export const cookieTtl = {
   [CookieKey.UserId]: 60 * 60 * 24 * 30 * 12 * 5,
-  [CookieKey.ScreenNumber]: 60 * 60 * 24 * 5,
+  [CookieKey.ScreenNumber]: 60 * 60 * 24 * 30 * 12 * 5,
 };

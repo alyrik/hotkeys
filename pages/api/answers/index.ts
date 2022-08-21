@@ -1,4 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import {
+  uniqueNamesGenerator,
+  Config,
+  adjectives,
+  animals,
+} from 'unique-names-generator';
 
 import { IIndividualAnswerDto } from '@/models/dto/IndividualAnswerDto';
 import dynamoDbService from '@/services/dynamoDbService';
@@ -6,13 +12,24 @@ import { FormValue } from '@/models/FormValue';
 import { buildScreenNumberCookie } from '@/helpers/buildCookie';
 import { CookieKey } from '@/config/cookies';
 
+const config: Config = {
+  dictionaries: [adjectives, animals],
+  style: 'capital',
+  separator: ' ',
+};
+
 async function handleGetIndividualResults(userId: string) {
   const data = await dynamoDbService.findOne(
     { userId: { S: userId } },
     { tableName: process.env.AWS_TABLE_INDIVIDUAL! },
   );
+  const username = data.username || uniqueNamesGenerator(config);
 
-  return data.answers;
+  return {
+    answers: data.answers,
+    username,
+    isDefaultUsername: !data.username,
+  };
 }
 
 async function handleSaveIndividualAnswer(
@@ -50,7 +67,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       try {
         await handleSaveIndividualAnswer(
           req.body,
-          req.cookies[CookieKey.UserId],
+          req.cookies[CookieKey.UserId]!,
         );
         res.setHeader(
           'Set-Cookie',
@@ -68,7 +85,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case 'GET':
       try {
         const data = await handleGetIndividualResults(
-          req.cookies[CookieKey.UserId],
+          req.cookies[CookieKey.UserId]!,
         );
         res.status(200).json(data);
       } catch (e) {

@@ -113,7 +113,7 @@ const SurveyPage: NextPage<ISurveyPageProps> = ({ screenNumber }) => {
     isError,
   } = useSaveIndividualAnswer();
 
-  const preparedIndividualData = prepareAnalyticsData(data);
+  const preparedIndividualData = prepareAnalyticsData(data?.answers);
 
   if (isFinalScreen && isIndividualResultsSuccess && !preparedIndividualData) {
     saveScreenNumberCookie(1);
@@ -407,6 +407,8 @@ https://hotkeys.guru`;
             individualData={preparedIndividualData}
             topUsersData={null}
             userPlace={null}
+            username={data?.username}
+            isDefaultUsername={data?.isDefaultUsername}
           />
         </>
       );

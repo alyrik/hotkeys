@@ -1,3 +1,4 @@
-import { ISaveIndividualAnswerParams } from '@/models/Actions';
-
-export interface IIndividualAnswerDto extends ISaveIndividualAnswerParams {}
+export interface IIndividualAnswerDto {
+  questionId: number;
+  answer: string;
+}
